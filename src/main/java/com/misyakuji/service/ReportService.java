@@ -23,17 +23,22 @@ public class ReportService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public byte[] generateReport(List<ReportEntity> reports) throws JRException, IOException {
-        Resource template = resourceLoader.getResource("classpath:templates/debt_bill.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(template.getInputStream());
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reports);
+    /**
+     * 统一生成报表逻辑
+     *
+     * @param templateResource 模板资源
+     * @param jsonResource     JSON数据资源
+     * @return PDF字节数组
+     */
+    public byte[] generateReport(Resource templateResource, Resource jsonResource) throws JRException, IOException {
+        // 解析JSON数据
+        List<ReportEntity> data = objectMapper.readValue(jsonResource.getInputStream(), new TypeReference<>() {});
+
+        // 编译模板并生成报表
+        JasperReport jasperReport = JasperCompileManager.compileReport(templateResource.getInputStream());
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(data);
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, new HashMap<>(), dataSource);
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
 
-    public byte[] generateReportExample() throws JRException, IOException {
-        Resource json = resourceLoader.getResource("classpath:templates/debt_bill_data.json");
-        List<ReportEntity> exampleData = objectMapper.readValue(json.getInputStream(), new TypeReference<>() {});
-        return generateReport(exampleData);
-    }
 }

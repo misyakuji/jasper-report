@@ -5,7 +5,7 @@ This is study project with jasper in Springboot.
 
 
 ## 环境准备
-- 配置jdk17环境变量
+- 配置jdk21环境变量
 - 配置docker环境
 - 配置maven
 ```shell

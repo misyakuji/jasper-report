@@ -22,10 +22,11 @@ public class StartupRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        String url = String.format("http://%s:%d/api/v1/reports/bill_example?type=show", serverAddress, serverPort);
+        String url = String.format("http://%s:%d/api/v1/reports/bill/example?inline=true", serverAddress, serverPort);
         logger.info("See example {}", url);
 
         if (isDesktopEnvironment()) {
+            // 启动后自动打开链接
             // openBrowser(url);
         }
     }
