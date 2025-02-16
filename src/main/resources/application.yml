@@ -1,8 +1,54 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /api
+#  address: 127.0.0.1
+
+app:
+  auto-open: false
+  database:
+    path: "./data/bill.db"
+    ddl-path: "classpath:ddl"
+
 spring:
   application:
     name: jasper-report-api
+  datasource:
+    url: jdbc:sqlite:${app.database.path}
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      maximum-pool-size: 1  # SQLite强制要求连接池大小为1
+      data-source-properties:
+        pragma.journal_mode: WAL     # WAL模式需要配合以下参数
+        pragma.synchronous: NORMAL   # 优化WAL模式性能
+        pragma.foreign_keys: ON      # 启用外键约束
+        pragma.temp_store: MEMORY    # 临时表使用内存存储
+        pragma.busy_timeout: 5000   # 设置锁等待超时
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:ddl/schema.sql
+      data-locations: classpath:ddl/data.sql
 
-# Application service
-server:
-  port: 8088
-#  address: 127.0.0.1
+jpa:
+  database-platform: org.hibernate.community.dialect.SQLiteDialect
+  hibernate:
+    ddl-auto: update
+  show-sql: true
+  properties:
+    hibernate:
+      format_sql: true
+      connection.provider_disables_autocommit: true  # 禁用自动提交
+      jdbc:
+        batch_size: 0               # 必须关闭批量操作
+        time_zone: UTC+8              # 统一时区
+      query:
+        in_clause_parameter_padding: true  # 优化IN查询
+      id:
+        new_generator_mappings: false     # 兼容旧版ID生成策略
+
+logging:
+  level:
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.misyakuji: INFO

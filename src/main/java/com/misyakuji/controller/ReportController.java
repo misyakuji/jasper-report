@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @RestController
-@RequestMapping("/api/" + ReportController.VERSION + ReportController.RESOURCE_NAME)
+@RequestMapping("/reports")
 public class ReportController {
 
-    public static final String RESOURCE_NAME = "/reports";
-    public static final String VERSION = "v1";
+//    public static final String RESOURCE_NAME = "/reports";
+//    public static final String VERSION = "v1";
 
     @Autowired
     private ReportService reportService;
@@ -35,21 +35,16 @@ public class ReportController {
      */
     @GetMapping(value = "/bill/example", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<?> generateReportExample(@RequestParam(required = false, defaultValue = "true") boolean inline) {
-        try {
-            // 加载 classpath 资源
-//            Resource template = resourceLoader.getResource("classpath:templates/debt_bill.jrxml");
-//            Resource jsonData = resourceLoader.getResource("classpath:templates/debt_bill_data.json");
 
-            Resource template = resourceLoader.getResource("https://raw.githubusercontent.com/Misyakuji/my-files/refs/heads/master/jrxml/debt_bill.jrxml");
-            Resource jsonData = resourceLoader.getResource("https://raw.githubusercontent.com/Misyakuji/my-files/refs/heads/master/json/debt_bill_data-new.json");
+        WebResourceRequest request = new WebResourceRequest();
+        // 加载 classpath 资源
+        request.setTemplateUrl("classpath:templates/debt_bill.jrxml");
+        request.setJsonUrl("classpath:templates/debt_bill_data.json");
+//        request.setTemplateUrl("https://raw.githubusercontent.com/Misyakuji/my-files/refs/heads/master/jrxml/debt_bill.jrxml");
+//        request.setJsonUrl("https://raw.githubusercontent.com/Misyakuji/my-files/refs/heads/master/json/debt_bill_data-new.json");
+        request.setInline(inline);
+        return this.generateReportFromWeb(request);
 
-            // 生成报表
-            byte[] pdfBytes = reportService.generateReport(template, jsonData);
-            return buildPdfResponse(pdfBytes, "report_example", inline);
-        } catch (IOException | JRException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("报表生成失败: " + e.getMessage());
-        }
     }
 
     /**

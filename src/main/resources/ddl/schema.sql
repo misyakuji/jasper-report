@@ -1,0 +1,1 @@
+INSERT INTO "main"."Borrowers" ("name", "contact_info", "loan_start_date", "total_loan_amount") VALUES ('auto', '13800138000', 1740758400000, 100000);
