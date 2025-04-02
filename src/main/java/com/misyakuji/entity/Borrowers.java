@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Borrowers")
+@Table(name = "borrowers")
 @Data
 public class Borrowers {
     @Id
@@ -20,17 +20,17 @@ public class Borrowers {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(name = "contact_info", length = 255)
-    private String contactInfo;
+    @Column(name = "tel", length = 255)
+    private String tel;
 
-    @Column(name = "loan_start_date")
-    private LocalDate loanStartDate;
+    @Column(name = "start_date")
+    private LocalDate sartDate;
 
-    @Column(name = "clearance_date")
-    private LocalDate clearanceDate;
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
-    @Column(name = "total_loan_amount", precision = 10, scale = 2)
-    private BigDecimal totalLoanAmount;
+    @Column(name = "total_loan", precision = 10, scale = 2)
+    private BigDecimal totalLoan;
 
     @Column(name = "total_interest_amount", precision = 10, scale = 2)
     private BigDecimal totalInterestAmount;

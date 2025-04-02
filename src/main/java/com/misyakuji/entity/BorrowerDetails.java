@@ -11,16 +11,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "BorrowerDetails")
+@Table(name = "borrower_details")
 @Data
 public class BorrowerDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "borrower_id", nullable = false)
-    private Borrowers borrower;
+//    @ManyToOne
+//    @JoinColumn(name = "borrower_id", nullable = false)
+//    private Borrowers borrower;
+    @Column(name = "borrower_id", nullable = false)
+    private Integer borrowerId;
 
     @Column(name = "transaction_type", nullable = false, length = 20)
     private TransactionType transactionType;
