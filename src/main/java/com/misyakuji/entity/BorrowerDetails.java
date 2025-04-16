@@ -1,8 +1,12 @@
 package com.misyakuji.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.misyakuji.enums.TransactionType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,16 +17,22 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "borrower_details")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BorrowerDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "borrower_id", nullable = false)
-//    private Borrowers borrower;
-    @Column(name = "borrower_id", nullable = false)
-    private Integer borrowerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "borrower_id", nullable = false)
+//    @JsonIgnore // 完全忽略序列化, @JsonIgnore可替代主从表的@JsonManagedReference 和 @JsonBackReference
+    @JsonBackReference
+    private Borrowers borrower;
+
+//    @Column(name = "borrower_id", nullable = false)
+//    private Integer borrowerId;
 
     @Column(name = "transaction_type", nullable = false, length = 20)
     private TransactionType transactionType;

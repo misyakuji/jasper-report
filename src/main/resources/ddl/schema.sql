@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS borrowers (
     start_date DATE, -- 借款开始日期
     end_date DATE, -- 清账日期（如果已清账，则为最后还款日期；否则为空）
     total_loan DECIMAL(10, 2), -- 总借款额
-    total_interest_amount DECIMAL(10, 2), -- 总利息额
+    total_interest DECIMAL(10, 2), -- 总利息额
     remaining_balance DECIMAL(10, 2), -- 剩余还款额
     total_amount DECIMAL(10, 2), -- 总金额（包括本金和利息）
     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 记录创建时间

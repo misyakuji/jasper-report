@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport name="debt_bill" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<field name="date" class="java.lang.String"/>
+	<field name="transactionDate" class="java.time.LocalDate"/>
 	<field name="amount" class="java.math.BigDecimal"/>
-	<field name="remark" class="java.lang.String"/>
-	<field name="timestamp" class="java.lang.String"/>
+	<field name="notes" class="java.lang.String"/>
+	<field name="updatedTime" class="java.time.LocalDateTime"/>
 
 	<variable name="totalAmount" class="java.math.BigDecimal" calculation="Sum">
 		<expression><![CDATA[$F{amount}]]></expression>
@@ -40,14 +40,14 @@
 	<detail>
 		<band height="20" splitType="Stretch">
 			<element kind="textField" x="0" y="0" width="180" height="16" style="detail">
-				<expression><![CDATA[$F{date}]]></expression>
+				<expression><![CDATA[$F{transactionDate}]]></expression>
 			</element>
 			<element kind="textField" x="180" y="0" width="180" height="16" style="detail">
 				<expression><![CDATA[$F{amount}]]></expression>
 				<pattern><![CDATA[#,##0.00]]></pattern>
 			</element>
 			<element kind="textField" x="380" y="0" width="180" height="16" style="detail">
-				<expression><![CDATA[$F{remark}]]></expression>
+				<expression><![CDATA[$F{notes}]]></expression>
 			</element>
 			<element kind="line" x="0" y="19" width="555" height="1"/>
 		</band>
@@ -58,7 +58,7 @@
 			<text><![CDATA[打印时间:]]></text>
 		</element>
 		<element kind="textField" x="75" y="5" width="150" height="30" style="summary">
-			<expression><![CDATA[$F{timestamp}]]></expression>
+			<expression><![CDATA[$F{updatedTime}]]></expression>
 		</element>
 		<element kind="staticText" x="200" y="5" width="70" height="30" style="summary">
 			<text><![CDATA[剩余欠款额:]]></text>
