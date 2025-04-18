@@ -54,16 +54,16 @@
 	</detail>
 
 	<summary height="53">
-		<element kind="staticText" x="10" y="5" width="60" height="30" style="summary" hTextAlign="Right">
+		<element kind="staticText" x="0" y="5" width="60" height="30" style="summary" hTextAlign="Right">
 			<text><![CDATA[打印时间:]]></text>
 		</element>
-		<element kind="textField" x="75" y="5" width="150" height="30" style="summary">
+		<element kind="textField" x="65" y="5" width="150" height="30" style="summary">
 			<expression><![CDATA[$F{updatedTime}]]></expression>
 		</element>
-		<element kind="staticText" x="200" y="5" width="70" height="30" style="summary">
+		<element kind="staticText" x="210" y="5" width="70" height="30" style="summary">
 			<text><![CDATA[剩余欠款额:]]></text>
 		</element>
-		<element kind="textField" x="275" y="5" width="200" height="30" style="summary">
+		<element kind="textField" x="285" y="5" width="200" height="30" style="summary">
 			<expression><![CDATA[$V{totalAmount}]]></expression>
 			<pattern><![CDATA[#,###.##]]></pattern>
 		</element>
