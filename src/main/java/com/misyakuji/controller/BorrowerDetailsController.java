@@ -51,4 +51,12 @@ public class BorrowerDetailsController {
     public ResponseEntity<String> handleNotFound(EntityNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @PostMapping("/all")
+    public ResponseEntity<List<BorrowerDetails>> createAll(@RequestBody List<BorrowerDetails> details) {
+        return new ResponseEntity<>(service.createAll(details), HttpStatus.CREATED);
+    }
+
+    // delete by Borrower ID
+    // insert/update by Borrower ID
 }

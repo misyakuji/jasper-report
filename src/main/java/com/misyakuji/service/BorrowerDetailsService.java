@@ -41,4 +41,12 @@ public class BorrowerDetailsService {
     public List<BorrowerDetails> getAll() {
         return repository.findAll();
     }
+
+    public List<BorrowerDetails> createAll(List<BorrowerDetails> borrowers) {
+        return repository.saveAll(borrowers);
+    }
+
+    public List<BorrowerDetails> updateAll(List<BorrowerDetails> borrowers) {
+        return repository.saveAll(borrowers);
+    }
 }
