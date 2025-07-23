@@ -5,8 +5,8 @@
     "amount": 1000,
     "transactionDate": "2025-03-01",
     "notes": "test1",
-    "createdTime": "2025-04-17T01:21:20.638",
-    "updatedTime": "2025-04-17T01:21:20.638"
+    "createdTime": "2025-04-17 01:21:20.638000",
+    "updatedTime": "2025-04-17 01:21:20.638000"
   },
   {
     "id": 2,
@@ -14,8 +14,8 @@
     "amount": 2000,
     "transactionDate": "2025-03-01",
     "notes": "test2",
-    "createdTime": "2025-04-17T01:21:42.307",
-    "updatedTime": "2025-04-17T01:21:42.307"
+    "createdTime": "2025-04-17 01:21:42.307000",
+    "updatedTime": "2025-04-17 01:21:42.307000"
   },
   {
     "id": 3,
@@ -23,8 +23,8 @@
     "amount": 3000,
     "transactionDate": "2025-03-01",
     "notes": "test3",
-    "createdTime": "2025-04-17T01:23:18.14",
-    "updatedTime": "2025-04-17T01:23:18.14"
+    "createdTime": "2025-04-17 01:23:18.140000",
+    "updatedTime": "2025-04-17 01:23:18.140000"
   },
   {
     "id": 4,
@@ -32,7 +32,7 @@
     "amount": 4000,
     "transactionDate": "2025-03-01",
     "notes": "test4",
-    "createdTime": "2025-04-17T01:23:20.509",
-    "updatedTime": "2025-04-17T01:23:20.509"
+    "createdTime": "2025-04-17 01:23:20.509000",
+    "updatedTime": "2025-04-17 01:23:20.509000"
   }
 ]
