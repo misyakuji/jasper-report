@@ -7,7 +7,7 @@ server:
 app:
   auto-open: false
   database:
-    path: "./data/bill.db"
+    path: "./data/debt_bills.db"
     ddl-path: "classpath:ddl"
 
 spring:
@@ -30,25 +30,29 @@ spring:
       schema-locations: classpath:ddl/schema.sql
       data-locations: classpath:ddl/data.sql
 
-jpa:
-  database-platform: org.hibernate.community.dialect.SQLiteDialect
-  hibernate:
-    ddl-auto: update
-  show-sql: true
-  properties:
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
     hibernate:
-      format_sql: true
-      connection.provider_disables_autocommit: true  # 禁用自动提交
-      jdbc:
-        batch_size: 0               # 必须关闭批量操作
-        time_zone: UTC+8              # 统一时区
-      query:
-        in_clause_parameter_padding: true  # 优化IN查询
-      id:
-        new_generator_mappings: false     # 兼容旧版ID生成策略
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 0               # 必须关闭批量操作
+          time_zone: UTC+8              # 统一时区
+        query:
+          in_clause_parameter_padding: true  # 优化IN查询
+        id:
+          new_generator_mappings: false     # 兼容旧版ID生成策略
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss.SSS  # 时间格式化格式
+    time-zone: GMT+8  # 设置时区为东八区
 
 logging:
   level:
+    org.springframework.jdbc.datasource.init: INFO  # 打印脚本执行日志
+    org.springframework.jdbc: TRACE  # 打印 SQL 执行细节
     org.hibernate.SQL: INFO
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     com.misyakuji: INFO

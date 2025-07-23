@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS borrowers (
     total_interest DECIMAL(10, 2), -- 总利息额
     remaining_balance DECIMAL(10, 2), -- 剩余还款额
     total_amount DECIMAL(10, 2), -- 总金额（包括本金和利息）
-    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 记录创建时间
-    updated_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 记录更新时间
+    created_time TIMESTAMP DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%f', 'now', 'localtime')),
+    updated_time TIMESTAMP DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%f', 'now', 'localtime'))
 );
 -- 创建borrower_details表，用于记录所有与借款相关的交易细节
 CREATE TABLE IF NOT EXISTS borrower_details (
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS borrower_details (
     amount DECIMAL(10, 2) NOT NULL, -- 交易金额
     transaction_date DATE NOT NULL, -- 交易日期
     notes TEXT, -- 其他备注或说明
-    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 记录创建时间
-    updated_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 记录更新时间
+    created_time TIMESTAMP DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%f', 'now', 'localtime')),
+    updated_time TIMESTAMP DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%f', 'now', 'localtime')),
     FOREIGN KEY (borrower_id) REFERENCES borrowers(id) -- 设置外键约束
 );

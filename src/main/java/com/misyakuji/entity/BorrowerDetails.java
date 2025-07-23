@@ -1,14 +1,13 @@
 package com.misyakuji.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.misyakuji.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -46,11 +45,11 @@ public class BorrowerDetails {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
-    @CreationTimestamp
-    @Column(name = "created_time", updatable = false)
+    @Column(name = "created_time", columnDefinition = "TEXT", updatable = false, insertable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private LocalDateTime createdTime;
 
-    @UpdateTimestamp
-    @Column(name = "updated_time")
+    @Column(name = "updated_time", columnDefinition = "TEXT", insertable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private LocalDateTime updatedTime;
 }
