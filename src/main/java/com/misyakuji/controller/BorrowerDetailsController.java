@@ -37,8 +37,8 @@ public class BorrowerDetailsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BorrowerDetails> findById(@PathVariable Integer id) {
-        return ResponseEntity.ok(service.findById(id));
+    public ResponseEntity<List<BorrowerDetails>> findByBorrowerId(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.findByBorrowerId(id));
     }
 
     @GetMapping
@@ -49,11 +49,6 @@ public class BorrowerDetailsController {
     @PostMapping("/all")
     public ResponseEntity<List<BorrowerDetails>> createAll(@RequestBody List<BorrowerDetails> details) {
         return new ResponseEntity<>(service.createAll(details), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/all/{id}")
-    public ResponseEntity<List<BorrowerDetails>> findByBorrowerId(@PathVariable Integer id) {
-        return ResponseEntity.ok(service.findByBorrowerId(id));
     }
 
     // 统一异常处理

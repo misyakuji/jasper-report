@@ -33,10 +33,6 @@ public class BorrowerDetailsService {
         repository.deleteById(id);
     }
 
-    public BorrowerDetails findById(Integer id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Borrower not found"));
-    }
     public List<BorrowerDetails> findByBorrowerId(Integer borrowerId) {
         return repository.findByBorrowerId(borrowerId);
     }
