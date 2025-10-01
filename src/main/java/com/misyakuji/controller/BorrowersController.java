@@ -93,14 +93,4 @@ public class BorrowersController {
         return ResponseEntity.ok(service.getAll());
     }
 
-    /**
-     * 统一异常处理方法 - 处理实体未找到异常
-     * 当请求的借款人记录不存在时触发此异常处理器
-     * @param ex EntityNotFoundException异常实例
-     * @return 包含错误消息的响应体及HTTP 404状态码
-     */
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleNotFound(EntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
 }

@@ -51,9 +51,4 @@ public class BorrowerDetailsController {
         return new ResponseEntity<>(service.createAll(details), HttpStatus.CREATED);
     }
 
-    // 统一异常处理
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleNotFound(EntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
 }
