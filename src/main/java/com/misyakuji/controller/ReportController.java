@@ -4,10 +4,7 @@ import com.misyakuji.service.ReportService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/reports")
@@ -30,12 +27,12 @@ public class ReportController {
 
     /**
      * 以数据库为数据源生成报表
-     * Get http://localhost:8088/api/reports/bill/db
+     * Get http://localhost:8088/api/reports/bill/db/{id}
      *
      * @return ResponseEntity pdf报表
      */
-    @GetMapping(value = "/bill/db", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<?> generateReportDatabase() {
-        return reportService.generateReportDatabase();
+    @GetMapping(value = "/bill/db/{id}", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<?> generateReportDatabase(@PathVariable Integer id) {
+        return reportService.generateReportDatabase(id);
     }
 }

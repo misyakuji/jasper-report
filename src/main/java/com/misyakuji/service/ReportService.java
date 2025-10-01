@@ -53,9 +53,9 @@ public class ReportService {
 
     }
 
-    public ResponseEntity<?> generateReportDatabase() {
+    public ResponseEntity<?> generateReportDatabase(Integer id) {
 
-        List<BorrowerDetails> detailList = detailsService.getAll();
+        List<BorrowerDetails> detailList = detailsService.findByBorrowerId(id);
         if (!detailList.isEmpty()) {
 
             // 获取报表模板

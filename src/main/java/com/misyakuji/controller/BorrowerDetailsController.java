@@ -37,8 +37,8 @@ public class BorrowerDetailsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BorrowerDetails> getById(@PathVariable Integer id) {
-        return ResponseEntity.ok(service.getById(id));
+    public ResponseEntity<BorrowerDetails> findById(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @GetMapping
@@ -46,17 +46,19 @@ public class BorrowerDetailsController {
         return ResponseEntity.ok(service.getAll());
     }
 
-    // 统一异常处理
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleNotFound(EntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
     @PostMapping("/all")
     public ResponseEntity<List<BorrowerDetails>> createAll(@RequestBody List<BorrowerDetails> details) {
         return new ResponseEntity<>(service.createAll(details), HttpStatus.CREATED);
     }
 
-    // delete by Borrower ID
-    // insert/update by Borrower ID
+    @GetMapping("/all/{id}")
+    public ResponseEntity<List<BorrowerDetails>> findByBorrowerId(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.findByBorrowerId(id));
+    }
+
+    // 统一异常处理
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleNotFound(EntityNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }

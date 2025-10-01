@@ -29,6 +29,11 @@ public class BorrowersController {
     public ResponseEntity<Borrowers> update(@PathVariable Integer id, @RequestBody Borrowers borrower) {
         return ResponseEntity.ok(service.update(id, borrower));
     }
+    
+    @PutMapping("/{id}/auto-update")
+    public ResponseEntity<Borrowers> autoUpdate(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.autoUpdate(id));
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
