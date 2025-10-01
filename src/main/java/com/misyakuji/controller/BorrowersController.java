@@ -57,7 +57,7 @@ public class BorrowersController {
      * @return 更新成功的借款人对象及HTTP 200状态码
      * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
      */
-    @PutMapping("/{id}/auto-update")  // PUT /borrowers/{id}/auto-update
+    @PutMapping("update/{id}")  // PUT /borrowers/update/{id}
     public ResponseEntity<Borrowers> autoUpdate(@PathVariable Integer id) {
         return ResponseEntity.ok(service.autoUpdate(id));
     }
