@@ -1,1 +1,1 @@
-INSERT INTO "main"."borrowers" ("name", "tel", "start_date", "total_loan") VALUES ('Mr.王', '15560222562', 1696003200000, 50000);
+INSERT INTO "main"."borrowers" ("name", "tel", "start_date", "total_loan") VALUES ('Mr.王', '15560222562', 2023-09-30, 50000);

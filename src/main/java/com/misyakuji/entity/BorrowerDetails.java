@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -40,7 +39,7 @@ public class BorrowerDetails {
     private BigDecimal amount;
 
     @Column(name = "transaction_date", nullable = false)
-    private LocalDate transactionDate;
+    private String transactionDate;
 
     @Column(columnDefinition = "TEXT")
     private String notes;

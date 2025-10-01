@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport name="debt_bill" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<field name="transactionDate" class="java.time.LocalDate"/>
+	<field name="transactionDate" class="java.lang.String"/>
 	<field name="amount" class="java.math.BigDecimal"/>
 	<field name="notes" class="java.lang.String"/>
 	<field name="updatedTime" class="java.time.LocalDateTime"/>
