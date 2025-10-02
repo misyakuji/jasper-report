@@ -46,17 +46,16 @@ public class BorrowersService {
 
     /**
      * 更新指定ID的借款人信息
-     * @param id 借款人ID
      * @param borrower 包含更新后信息的借款人对象
      * @return 更新后的借款人实体对象
      * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
      */
-    public Borrowers update(Integer id, Borrowers borrower) {
+    public Borrowers update(Borrowers borrower) {
         // 查找指定ID的借款人，如果存在则更新，否则抛出异常
-        return repository.findById(id)
+        return repository.findById(borrower.getId())
                 .map(existing -> {
                     // 设置ID以确保更新操作而非创建新记录
-                    borrower.setId(id);
+                    borrower.setId(borrower.getId());
                     // 保存更新后的借款人信息
                     return repository.save(borrower);
                 })
