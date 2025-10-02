@@ -39,13 +39,15 @@ public class BorrowersController {
     }
 
     /**
-     * 更新借款人信息
+     * 更新指定ID的借款人信息
+     * @param id 借款人ID
      * @param borrower 包含更新后借款人信息的请求体
      * @return 更新成功的借款人对象及HTTP 200状态码
+     * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
      */
-    @PutMapping  // PUT /borrowers
-    public ResponseEntity<Borrowers> update(@RequestBody Borrowers borrower) {
-        return ResponseEntity.ok(service.update(borrower));
+    @PutMapping("/{id}")  // PUT /borrowers/{id}
+    public ResponseEntity<Borrowers> update(@PathVariable Integer id, @RequestBody Borrowers borrower) {
+        return ResponseEntity.ok(service.update(id, borrower));
     }
     
     /**
