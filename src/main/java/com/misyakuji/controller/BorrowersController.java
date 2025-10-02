@@ -29,6 +29,26 @@ public class BorrowersController {
     }
 
     /**
+     * 查询所有借款人信息列表
+     * @return 包含所有借款人的列表及HTTP 200状态码
+     */
+    @GetMapping  // GET /borrowers
+    public ResponseEntity<List<Borrowers>> getAll() {
+        return ResponseEntity.ok(service.getAll());
+    }
+
+    /**
+     * 根据ID查询借款人信息
+     * @param id 借款人ID
+     * @return 查询到的借款人对象及HTTP 200状态码
+     * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
+     */
+    @GetMapping("/{id}")  // GET /borrowers/{id}
+    public ResponseEntity<Borrowers> getById(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.getById(id));
+    }
+
+    /**
      * 创建新的借款人记录
      * @param borrower 包含借款人信息的请求体
      * @return 创建成功的借款人对象及HTTP 201状态码
@@ -49,17 +69,40 @@ public class BorrowersController {
     public ResponseEntity<Borrowers> update(@PathVariable Integer id, @RequestBody Borrowers borrower) {
         return ResponseEntity.ok(service.update(id, borrower));
     }
-    
+
     /**
-     * 自动更新指定ID的借款人财务信息
+     * 更新指定ID的借款人信息
+     * @param id 借款人ID
+     * @param borrower 包含更新后借款人信息的请求体
+     * @return 更新成功的借款人对象及HTTP 200状态码
+     * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
+     */
+    @PatchMapping("/{id}")  // PUT /borrowers/{id}
+    public ResponseEntity<Borrowers> patch(@PathVariable Integer id, @RequestBody Borrowers borrower) {
+        return ResponseEntity.ok(service.patch(id, borrower));
+    }
+
+    /**
+     * 计算所有借款人财务信息
+     * 根据关联的交易明细自动计算并更新总借款额、利息、剩余还款额等字段
+     * @return 更新成功的借款人对象及HTTP 200状态码
+     * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
+     */
+    @PostMapping("/calculator")  // POST /borrowers/calculator
+    public ResponseEntity<List<Borrowers>> calculatorAll() {
+        return ResponseEntity.ok(service.calculatorAll());
+    }
+
+    /**
+     * 计算指定ID的借款人财务信息
      * 根据关联的交易明细自动计算并更新总借款额、利息、剩余还款额等字段
      * @param id 借款人ID
      * @return 更新成功的借款人对象及HTTP 200状态码
      * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
      */
-    @PutMapping("update/{id}")  // PUT /borrowers/update/{id}
-    public ResponseEntity<Borrowers> autoUpdate(@PathVariable Integer id) {
-        return ResponseEntity.ok(service.autoUpdate(id));
+    @PostMapping("/calculator/{id}")  // POST /borrowers/calculator/{id}
+    public ResponseEntity<Borrowers> calculator(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.calculator(id));
     }
 
     /**
@@ -73,24 +116,6 @@ public class BorrowersController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * 根据ID查询借款人信息
-     * @param id 借款人ID
-     * @return 查询到的借款人对象及HTTP 200状态码
-     * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
-     */
-    @GetMapping("/{id}")  // GET /borrowers/{id}
-    public ResponseEntity<Borrowers> getById(@PathVariable Integer id) {
-        return ResponseEntity.ok(service.getById(id));
-    }
 
-    /**
-     * 查询所有借款人信息列表
-     * @return 包含所有借款人的列表及HTTP 200状态码
-     */
-    @GetMapping  // GET /borrowers
-    public ResponseEntity<List<Borrowers>> getAll() {
-        return ResponseEntity.ok(service.getAll());
-    }
 
 }

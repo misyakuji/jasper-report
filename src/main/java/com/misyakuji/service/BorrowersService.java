@@ -4,13 +4,14 @@ import com.misyakuji.entity.Borrowers;
 import com.misyakuji.entity.BorrowerDetails;
 import com.misyakuji.enums.TransactionType;
 import com.misyakuji.repository.BorrowersRepository;
-import com.misyakuji.repository.BorrowerDetailsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 借款人服务层实现类
@@ -21,17 +22,34 @@ public class BorrowersService {
 
     // 注入借款人数据访问层组件
     private final BorrowersRepository repository;
-    // 注入借款人明细数据访问层组件
-    private final BorrowerDetailsRepository borrowerDetailsRepository;
 
     /**
      * 构造函数，通过依赖注入获取数据访问层组件
      * @param repository 借款人数据访问层组件
-     * @param borrowerDetailsRepository 借款人明细数据访问层组件
      */
-    public BorrowersService(BorrowersRepository repository, BorrowerDetailsRepository borrowerDetailsRepository) {
+    public BorrowersService(BorrowersRepository repository) {
         this.repository = repository;
-        this.borrowerDetailsRepository = borrowerDetailsRepository;
+    }
+
+    /**
+     * 查询所有借款人信息
+     * @return 包含所有借款人的列表
+     */
+    public List<Borrowers> getAll() {
+        // 调用数据访问层获取所有借款人记录
+        return repository.findAll();
+    }
+
+    /**
+     * 根据ID查询借款人信息
+     * @param id 借款人ID
+     * @return 查询到的借款人实体对象
+     * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
+     */
+    public Borrowers getById(Integer id) {
+        // 查找指定ID的借款人，如果不存在则抛出异常
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Borrower not found"));
     }
 
     /**
@@ -64,6 +82,50 @@ public class BorrowersService {
     }
 
     /**
+     * 部分更新指定ID的借款人信息
+     * 只更新传入对象中不为null的字段，保留数据库中已有但未传入的字段值不变
+     *
+     * @param id 借款人ID
+     * @param borrower 包含需要更新字段的借款人对象
+     * @return 更新后的借款人实体对象
+     * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
+     */
+    public Borrowers patch(Integer id, Borrowers borrower) {
+        // 查找指定ID的借款人，如果不存在则抛出异常
+        return repository.findById(id)
+                .map(existing -> {
+                    // 只更新不为null的字段
+                    if (borrower.getName() != null) {
+                        existing.setName(borrower.getName());
+                    }
+                    if (borrower.getTel() != null) {
+                        existing.setTel(borrower.getTel());
+                    }
+                    if (borrower.getStartDate() != null) {
+                        existing.setStartDate(borrower.getStartDate());
+                    }
+                    if (borrower.getEndDate() != null) {
+                        existing.setEndDate(borrower.getEndDate());
+                    }
+                    if (borrower.getTotalLoan() != null) {
+                        existing.setTotalLoan(borrower.getTotalLoan());
+                    }
+                    if (borrower.getTotalInterest() != null) {
+                        existing.setTotalInterest(borrower.getTotalInterest());
+                    }
+                    if (borrower.getRemainingBalance() != null) {
+                        existing.setRemainingBalance(borrower.getRemainingBalance());
+                    }
+                    if (borrower.getTotalAmount() != null) {
+                        existing.setTotalAmount(borrower.getTotalAmount());
+                    }
+                    // 保存更新后的借款人信息
+                    return repository.save(existing);
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Borrower not found"));
+    }
+
+    /**
      * 删除指定ID的借款人记录
      * @param id 借款人ID
      */
@@ -73,29 +135,8 @@ public class BorrowersService {
     }
 
     /**
-     * 根据ID查询借款人信息
-     * @param id 借款人ID
-     * @return 查询到的借款人实体对象
-     * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
-     */
-    public Borrowers getById(Integer id) {
-        // 查找指定ID的借款人，如果不存在则抛出异常
-        return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Borrower not found"));
-    }
-
-    /**
-     * 查询所有借款人信息
-     * @return 包含所有借款人的列表
-     */
-    public List<Borrowers> getAll() {
-        // 调用数据访问层获取所有借款人记录
-        return repository.findAll();
-    }
-
-    /**
-     * 自动更新指定ID借款人的财务信息
-     * 根据关联的交易明细自动计算并更新以下字段：
+     * 计算指定ID借款人的财务信息
+     * 根据关联的交易明细自计算并更新以下字段：
      * 1. 总借款额（所有贷款交易的总和）
      * 2. 总利息额（所有利息交易的总和）
      * 3. 剩余还款额（总借款+总利息+总还款）
@@ -106,13 +147,13 @@ public class BorrowersService {
      * @return 更新后的借款人实体对象
      * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
      */
-    public Borrowers autoUpdate(Integer id) {
+    public Borrowers calculator(Integer id) {
         // 查找指定ID的借款人，如果不存在则抛出异常
         Borrowers borrower = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Borrower not found"));
         
         // 获取该借款人的所有交易明细记录
-        List<BorrowerDetails> borrowerDetails = borrowerDetailsRepository.findByBorrowerId(id);
+        List<BorrowerDetails> borrowerDetails = borrower.getBorrowerDetails();
         
         // 使用Stream API统计该借款人的总借款金额
         // 过滤出交易类型为LOAN的记录，并累加其金额
@@ -160,5 +201,15 @@ public class BorrowersService {
         
         // 保存更新后的借款人信息
         return repository.save(borrower);
+    }
+    
+    /**
+     * 计算所有借款人的财务信息
+     */
+    public List<Borrowers> calculatorAll() {
+        return getAll().stream()
+                .filter(borrower -> borrower.getEndDate() == null) // 过滤条件
+                .map(borrower -> calculator(borrower.getId()))
+                .collect(Collectors.toList());
     }
 }
