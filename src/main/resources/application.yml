@@ -4,34 +4,29 @@ server:
     context-path: /api
 #  address: 127.0.0.1
 
-app:
-  auto-open: false
-  database:
-    path: "./data/debt_bills.db"
-    ddl-path: "classpath:ddl"
-
 spring:
   application:
     name: jasper-report-api
   datasource:
-    url: jdbc:sqlite:${app.database.path}
-    driver-class-name: org.sqlite.JDBC
+    url: jdbc:mariadb://localhost:3306/debt_bills?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: jasper_user
+    password: ENC(vs4g5IUa7nOVObexLFLfFFNNfrsTcRbMt0euIV7UaYJAU4/lQlXzvgzyLRnXQLOE)
+    driver-class-name: org.mariadb.jdbc.Driver
     hikari:
-      maximum-pool-size: 1  # SQLite强制要求连接池大小为1
-      data-source-properties:
-        pragma.journal_mode: WAL     # WAL模式需要配合以下参数
-        pragma.synchronous: NORMAL   # 优化WAL模式性能
-        pragma.foreign_keys: ON      # 启用外键约束
-        pragma.temp_store: MEMORY    # 临时表使用内存存储
-        pragma.busy_timeout: 5000   # 设置锁等待超时
+      maximum-pool-size: 10        # MariaDB支持连接池
+      minimum-idle: 5
+      idle-timeout: 300000         # 5分钟
+      max-lifetime: 1200000        # 20分钟
+      connection-timeout: 30000    # 30秒
+      pool-name: HikariCP-MariaDB
   sql:
     init:
       mode: always
-      schema-locations: classpath:ddl/schema.sql
-      # data-locations: classpath:ddl/data.sql
+      schema-locations: classpath:ddl/schema_mysql.sql
+      data-locations: classpath:ddl/data_mysql.sql
 
   jpa:
-    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    database-platform: org.hibernate.dialect.MariaDBDialect
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -39,16 +34,20 @@ spring:
       hibernate:
         format_sql: true
         jdbc:
-          batch_size: 0               # 必须关闭批量操作
-          time_zone: UTC+8              # 统一时区
+          batch_size: 50            # MariaDB支持批量操作
+          time_zone: UTC+8
         query:
-          in_clause_parameter_padding: true  # 优化IN查询
-        id:
-          new_generator_mappings: false     # 兼容旧版ID生成策略
+          in_clause_parameter_padding: true
+        order_inserts: true         # 优化批量插入
+        order_updates: true         # 优化批量更新
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss.SSS  # 时间格式化格式
     time-zone: GMT+8  # 设置时区为东八区
 
+# Jasypt
+jasypt:
+  encryptor:
+    password: SecretKey_jasper_mariadb
 logging:
   level:
     org.springframework.jdbc.datasource.init: INFO  # 打印脚本执行日志

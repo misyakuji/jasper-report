@@ -18,7 +18,7 @@ chmod +x mvnw
 
 ### 运行
 ```shell
-./mvnw spring-boot:run
+./mvnw spring-boot:run --jasypt.encryptor.password=SecretKey_jasper_mariadb
 ```
 
 ### maven打包

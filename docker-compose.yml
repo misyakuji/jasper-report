@@ -1,16 +1,51 @@
 version: '3.8'
 
 services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: mariadb-jasper
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: debt_bills
+      MYSQL_USER: jasper_user
+      MYSQL_PASSWORD: jasper_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./docker/init:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
   springboot-app:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: jasper-report-app
+    restart: unless-stopped
     ports:
       - "8088:8088"
-    # environment:
-    #   - SPRING_PROFILES_ACTIVE=prod
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/debt_bills?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=jasper_user
+      - SPRING_DATASOURCE_PASSWORD=jasper_pass
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.mariadb.jdbc.Driver
+    depends_on:
+      mariadb:
+        condition: service_healthy
     networks:
       - app-network
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  mariadb_data:
+    driver: local
 
 networks:
   app-network:

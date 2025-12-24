@@ -79,21 +79,19 @@ public class BorrowerDetails {
 
     /**
      * 创建时间戳
-     * 数据库列类型为TEXT
-     * 不可更新，不可插入（由数据库自动生成）
+     * MariaDB自动生成，不可更新
      * JSON序列化时使用指定的日期时间格式
      */
-    @Column(name = "created_time", columnDefinition = "TEXT", updatable = false, insertable = false)
+    @Column(name = "created_time", updatable = false, insertable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private LocalDateTime createdTime;
 
     /**
      * 更新时间戳
-     * 数据库列类型为TEXT
-     * 不可插入（由数据库自动生成或更新）
+     * MariaDB自动更新，不可插入
      * JSON序列化时使用指定的日期时间格式
      */
-    @Column(name = "updated_time", columnDefinition = "TEXT", insertable = false)
+    @Column(name = "updated_time", insertable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private LocalDateTime updatedTime;
 }
