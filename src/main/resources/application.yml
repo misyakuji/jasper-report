@@ -28,7 +28,7 @@ spring:
     init:
       mode: always
       schema-locations: classpath:ddl/schema.sql
-      data-locations: classpath:ddl/data.sql
+      # data-locations: classpath:ddl/data.sql
 
   jpa:
     database-platform: org.hibernate.community.dialect.SQLiteDialect
