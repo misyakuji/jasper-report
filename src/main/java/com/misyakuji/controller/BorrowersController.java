@@ -14,7 +14,7 @@ import java.util.List;
  * 提供借款人信息的增删改查及自动更新等RESTful API接口
  */
 @RestController
-@RequestMapping("/borrowers")
+@RequestMapping(value = "/borrowers", produces = "application/json")
 @CrossOrigin(origins = "*")
 public class BorrowersController {
 
