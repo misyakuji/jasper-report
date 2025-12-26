@@ -22,8 +22,8 @@ spring:
   sql:
     init:
       mode: always
-      schema-locations: classpath:ddl/schema_mysql.sql
-      data-locations: classpath:ddl/data_mysql.sql
+      schema-locations: classpath:ddl/schema.sql
+      data-locations: classpath:ddl/data.sql
 
   jpa:
     database-platform: org.hibernate.dialect.MariaDBDialect
