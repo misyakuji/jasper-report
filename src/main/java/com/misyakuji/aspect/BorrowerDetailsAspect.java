@@ -3,6 +3,7 @@ package com.misyakuji.aspect;
 import com.misyakuji.entity.BorrowerDetails;
 import com.misyakuji.repository.BorrowerDetailsRepository;
 import com.misyakuji.service.BorrowersService;
+import com.misyakuji.utils.LogUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -45,7 +46,7 @@ public class BorrowerDetailsAspect {
     public void afterCreate(BorrowerDetails result) {
         if (result != null && result.getBorrower() != null) {
             Integer borrowerId = result.getBorrower().getId();
-            log.debug("创建BorrowerDetails后自动执行calculator，borrowerId: {}", borrowerId);
+            LogUtils.logBusinessOperation("创建BorrowerDetails后触发calculator", null, "borrowerId: " + borrowerId);
             borrowersService.calculator(borrowerId);
         }
     }
@@ -57,7 +58,7 @@ public class BorrowerDetailsAspect {
     public void afterUpdate(BorrowerDetails result) {
         if (result != null && result.getBorrower() != null) {
             Integer borrowerId = result.getBorrower().getId();
-            log.debug("更新BorrowerDetails后自动执行calculator，borrowerId: {}", borrowerId);
+            LogUtils.logBusinessOperation("更新BorrowerDetails后触发calculator", null, "borrowerId: " + borrowerId);
             borrowersService.calculator(borrowerId);
         }
     }
@@ -68,7 +69,7 @@ public class BorrowerDetailsAspect {
      */
     @Around("execution(* com.misyakuji.service.BorrowerDetailsService.delete(..)) && args(id)")
     public Object aroundDelete(ProceedingJoinPoint joinPoint, Integer id) throws Throwable {
-        log.debug("开始处理delete请求，id: {}", id);
+        LogUtils.logDatabaseOperation("DELETE", "borrower_details", "id = " + id, 0);
         
         // 执行delete前，先获取对应的BorrowerDetails以获取borrowerId
         BorrowerDetails borrowerDetails = borrowerDetailsRepository.findById(id).orElse(null);
@@ -76,7 +77,7 @@ public class BorrowerDetailsAspect {
         
         if (borrowerDetails != null && borrowerDetails.getBorrower() != null) {
             borrowerId = borrowerDetails.getBorrower().getId();
-            log.debug("获取到borrowerId: {}", borrowerId);
+            LogUtils.logDatabaseOperation("SELECT", "borrower_details", "id = " + id, 1);
         }
         
         try {
@@ -85,14 +86,15 @@ public class BorrowerDetailsAspect {
             
             // 如果删除成功且获取到了borrowerId，则触发calculator处理
             if (borrowerId != null) {
-                log.debug("删除BorrowerDetails成功后自动执行calculator，borrowerId: {}", borrowerId);
+                LogUtils.logBusinessOperation("删除BorrowerDetails后触发calculator", null, "borrowerId: " + borrowerId);
                 borrowersService.calculator(borrowerId);
+                LogUtils.logDatabaseOperation("DELETE", "borrower_details", "id = " + id, 1);
             }
             
             return result;
         } catch (Throwable throwable) {
             // 记录异常信息，但不阻止异常向上传播
-            log.error("执行delete操作异常: {}", throwable.getMessage());
+            LogUtils.logBusinessOperation("删除BorrowerDetails失败", null, "id: " + id + ", error: " + throwable.getMessage());
             throw throwable;
         }
     }
@@ -102,9 +104,10 @@ public class BorrowerDetailsAspect {
      */
     @AfterReturning(value = "execution(* com.misyakuji.service.BorrowerDetailsService.createAll(..))", returning = "result")
     public void afterCreateAll(List<BorrowerDetails> result) {
-        if (result != null && !result.isEmpty() && result.get(0) != null && result.get(0).getBorrower() != null) {
-            Integer borrowerId = result.get(0).getBorrower().getId();
-            log.debug("批量创建BorrowerDetails后自动执行calculator，borrowerId: {}", borrowerId);
+        if (result != null && !result.isEmpty() && result.getFirst() != null && result.getFirst().getBorrower() != null) {
+            Integer borrowerId = result.getFirst().getBorrower().getId();
+            LogUtils.logBusinessOperation("批量创建BorrowerDetails后触发calculator", null, 
+                    "borrowerId: " + borrowerId + ", count: " + result.size());
             borrowersService.calculator(borrowerId);
         }
     }
@@ -114,9 +117,10 @@ public class BorrowerDetailsAspect {
      */
     @AfterReturning(value = "execution(* com.misyakuji.service.BorrowerDetailsService.updateAll(..))", returning = "result")
     public void afterUpdateAll(List<BorrowerDetails> result) {
-        if (result != null && !result.isEmpty() && result.get(0) != null && result.get(0).getBorrower() != null) {
-            Integer borrowerId = result.get(0).getBorrower().getId();
-            log.debug("批量更新BorrowerDetails后自动执行calculator，borrowerId: {}", borrowerId);
+        if (result != null && !result.isEmpty() && result.getFirst() != null && result.getFirst().getBorrower() != null) {
+            Integer borrowerId = result.getFirst().getBorrower().getId();
+            LogUtils.logBusinessOperation("批量更新BorrowerDetails后触发calculator", null, 
+                    "borrowerId: " + borrowerId + ", count: " + result.size());
             borrowersService.calculator(borrowerId);
         }
     }
