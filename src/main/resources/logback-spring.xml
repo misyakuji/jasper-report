@@ -3,10 +3,10 @@
     <!-- 定义日志文件的存储地址 -->
     <property name="LOG_HOME" value="logs"/>
     <property name="APP_NAME" value="jasper-report"/>
-    
+
     <!-- 定义当前日期变量 -->
     <timestamp key="currentDate" datePattern="yyyyMMdd"/>
-    
+
     <!-- 控制台输出 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -14,7 +14,7 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
-    
+
     <!-- 按日期滚动的文件输出（所有级别） -->
     <appender name="FILE_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 当前日志文件名包含日期 -->
@@ -31,7 +31,7 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
-    
+
     <!-- 只记录ERROR级别的日志文件 -->
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 当前错误日志文件名包含日期 -->
@@ -53,45 +53,52 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
-    
+
     <!-- 开发环境配置（默认，简洁模式） -->
     <springProfile name="dev,default">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE_ALL"/>
         </root>
-        
+
         <!-- 错误日志单独记录 -->
         <root level="ERROR">
             <appender-ref ref="FILE_ERROR"/>
         </root>
-        
-        <!-- 应用特定包的日志级别 - 生产模式下减少控制台输出 -->
+
         <logger name="com.misyakuji" level="INFO"/>
         <logger name="com.misyakuji.mapper" level="INFO"/>
         <logger name="org.springframework.jdbc" level="WARN"/>
-        <logger name="org.hibernate.SQL" level="WARN"/>
-        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="WARN"/>
-        <!-- 减少Spring框架的详细日志 -->
         <logger name="org.springframework.web" level="WARN"/>
         <logger name="org.springframework.security" level="WARN"/>
         <logger name="org.springframework.boot" level="WARN"/>
         <logger name="org.springframework.context" level="WARN"/>
         <logger name="org.springframework.beans" level="WARN"/>
+        <logger name="org.hibernate" level="INFO"/>
+        <logger name="org.hibernate.SQL" level="WARN"/>
+        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="WARN"/>
+        <logger name="org.hibernate.orm.connections.pooling" level="WARN" additivity="false">
+            <appender-ref ref="FILE_ALL"/>
+            <appender-ref ref="FILE_ERROR"/>
+        </logger>
+        <logger name="com.ulisesbocchio" level="INFO" additivity="false">
+            <appender-ref ref="FILE_ALL"/>
+            <appender-ref ref="FILE_ERROR"/>
+        </logger>
     </springProfile>
-    
+
     <!-- Debug环境配置（详细调试模式） -->
     <springProfile name="debug">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE_ALL"/>
         </root>
-        
+
         <!-- 错误日志单独记录 -->
         <root level="ERROR">
             <appender-ref ref="FILE_ERROR"/>
         </root>
-        
+
         <!-- 应用特定包的日志级别 - Debug模式下显示详细信息 -->
         <logger name="com.misyakuji" level="DEBUG"/>
         <logger name="com.misyakuji.mapper" level="DEBUG"/>
@@ -104,18 +111,18 @@
         <logger name="org.springframework.context" level="DEBUG"/>
         <logger name="org.springframework.beans" level="DEBUG"/>
     </springProfile>
-    
+
     <!-- 生产环境配置 -->
     <springProfile name="prod">
         <root level="INFO">
             <appender-ref ref="FILE_ALL"/>
         </root>
-        
+
         <!-- 错误日志单独记录 -->
         <root level="ERROR">
             <appender-ref ref="FILE_ERROR"/>
         </root>
-        
+
         <!-- 生产环境的日志级别 -->
         <logger name="com.misyakuji" level="INFO"/>
         <logger name="org.springframework.jdbc" level="WARN"/>
@@ -123,13 +130,13 @@
         <logger name="org.springframework.web" level="WARN"/>
         <logger name="org.springframework.security" level="WARN"/>
     </springProfile>
-    
+
     <!-- 测试环境配置 -->
     <springProfile name="test">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
-        
+
         <logger name="com.misyakuji" level="DEBUG"/>
     </springProfile>
 </configuration>
