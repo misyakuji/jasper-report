@@ -9,4 +9,6 @@ public interface UserInfoMapper {
     UserInfo findByUserId(@Param("userId") Long userId);
     void insertUserInfo(UserInfo userInfo);
     void updateUserInfo(UserInfo userInfo);
+    void updateUserInfoSelective(UserInfo userInfo);
+    void deleteUserInfoByUserId(@Param("userId") Long userId);
 }

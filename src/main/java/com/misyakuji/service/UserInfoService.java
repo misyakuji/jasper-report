@@ -6,4 +6,6 @@ public interface UserInfoService {
     UserInfo getUserInfoByUserId(Long userId);
     void createUserInfo(UserInfo userInfo);
     void updateUserInfo(UserInfo userInfo);
+    void updateUserInfoSelective(UserInfo userInfo);
+    void deleteUserInfoByUserId(Long userId);
 }

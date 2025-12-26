@@ -1,15 +1,13 @@
 package com.misyakuji.controller;
 
+import com.misyakuji.common.ApiResponse;
 import com.misyakuji.entity.User;
 import com.misyakuji.entity.UserInfo;
 import com.misyakuji.mapper.UserMapper;
 import com.misyakuji.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,5 +67,71 @@ public class UserInfoController {
         result.put("group", userInfo.getGroup());
         
         return result;
+    }
+
+    @PutMapping("/info")
+    public ApiResponse<String> updateUserInfo(@RequestBody UserInfo userInfo, Authentication authentication) {
+        try {
+            // 从Authentication中获取用户名
+            String username = authentication.getName();
+            // 根据用户名查询用户信息
+            User user = userMapper.findByUsername(username);
+            if (user == null) {
+                return ApiResponse.fail(org.springframework.http.HttpStatus.NOT_FOUND, "用户不存在");
+            }
+            
+            // 设置用户ID
+            userInfo.setUserId(user.getId());
+            
+            // 调用更新方法
+            userInfoService.updateUserInfo(userInfo);
+            
+            return ApiResponse.success("用户信息更新成功");
+        } catch (Exception e) {
+            return ApiResponse.fail(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, "更新用户信息失败: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/info")
+    public ApiResponse<String> patchUserInfo(@RequestBody UserInfo userInfo, Authentication authentication) {
+        try {
+            // 从Authentication中获取用户名
+            String username = authentication.getName();
+            // 根据用户名查询用户信息
+            User user = userMapper.findByUsername(username);
+            if (user == null) {
+                return ApiResponse.fail(org.springframework.http.HttpStatus.NOT_FOUND, "用户不存在");
+            }
+            
+            // 设置用户ID
+            userInfo.setUserId(user.getId());
+            
+            // 调用部分更新方法
+            userInfoService.updateUserInfoSelective(userInfo);
+            
+            return ApiResponse.success("用户信息部分更新成功");
+        } catch (Exception e) {
+            return ApiResponse.fail(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, "部分更新用户信息失败: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/info")
+    public ApiResponse<String> deleteUserInfo(Authentication authentication) {
+        try {
+            // 从Authentication中获取用户名
+            String username = authentication.getName();
+            // 根据用户名查询用户信息
+            User user = userMapper.findByUsername(username);
+            if (user == null) {
+                return ApiResponse.fail(org.springframework.http.HttpStatus.NOT_FOUND, "用户不存在");
+            }
+            
+            // 调用删除方法
+            userInfoService.deleteUserInfoByUserId(user.getId());
+            
+            return ApiResponse.success("用户信息删除成功");
+        } catch (Exception e) {
+            return ApiResponse.fail(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, "删除用户信息失败: " + e.getMessage());
+        }
     }
 }

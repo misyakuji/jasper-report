@@ -26,4 +26,14 @@ public class UserInfoServiceImpl implements UserInfoService {
     public void updateUserInfo(UserInfo userInfo) {
         userInfoMapper.updateUserInfo(userInfo);
     }
+
+    @Override
+    public void updateUserInfoSelective(UserInfo userInfo) {
+        userInfoMapper.updateUserInfoSelective(userInfo);
+    }
+
+    @Override
+    public void deleteUserInfoByUserId(Long userId) {
+        userInfoMapper.deleteUserInfoByUserId(userId);
+    }
 }

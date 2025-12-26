@@ -22,4 +22,24 @@
         WHERE user_id = #{userId}
     </update>
 
+    <update id="updateUserInfoSelective" parameterType="com.misyakuji.entity.UserInfo">
+        UPDATE user_info
+        <set>
+            <if test="mobile != null">mobile = #{mobile},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="seat != null">seat = #{seat},</if>
+            <if test="entity != null">entity = #{entity},</if>
+            <if test="leader != null">leader = #{leader},</if>
+            <if test="position != null">position = #{position},</if>
+            <if test="joinDay != null">join_day = #{joinDay},</if>
+            <if test="group != null">`group` = #{group},</if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteUserInfoByUserId">
+        DELETE FROM user_info WHERE user_id = #{userId}
+    </delete>
+
 </mapper>
