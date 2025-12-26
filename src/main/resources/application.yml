@@ -5,6 +5,10 @@ server:
 #  address: 127.0.0.1
 
 spring:
+#  security:
+#    user:
+#      name: admin
+#      password: 123456
   application:
     name: jasper-report-api
   datasource:
@@ -21,7 +25,7 @@ spring:
       pool-name: HikariCP-MariaDB
   sql:
     init:
-      mode: always
+      mode: never
       schema-locations: classpath:ddl/schema.sql
       data-locations: classpath:ddl/data.sql
 
@@ -44,14 +48,22 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss.SSS  # 时间格式化格式
     time-zone: GMT+8  # 设置时区为东八区
 
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.misyakuji.entity
+
+app:
+  jwtSecret: a8f7b36e5c9d4b12a1fef52d9c4a8e9d3f1b6a2c5d8e4f9a7b3c1d6e8f5a4c7d
+  jwtExpirationMs: 86400000
 # Jasypt
 jasypt:
   encryptor:
     password: SecretKey_jasper_mariadb
-logging:
-  level:
-    org.springframework.jdbc.datasource.init: INFO  # 打印脚本执行日志
-    org.springframework.jdbc: TRACE  # 打印 SQL 执行细节
-    org.hibernate.SQL: INFO
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    com.misyakuji: INFO
+#logging:
+#  level:
+#    # 数据库相关日志配置
+#    org.springframework.jdbc.datasource.init: DEBUG  # 打印数据库初始化脚本执行日志
+#    org.springframework.jdbc: DEBUG                # 打印 JDBC 操作的详细信息
+#    org.hibernate.SQL: DEBUG                        # 打印 Hibernate 生成的 SQL 语句
+#    org.hibernate.type.descriptor.sql.BasicBinder: DEBUG  # 打印 SQL 参数绑定详情
+#    com.misyakuji: DEBUG                           # 打印应用自定义包的日志

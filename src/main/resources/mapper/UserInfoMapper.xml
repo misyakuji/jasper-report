@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.misyakuji.mapper.UserInfoMapper">
+
+    <select id="findByUserId" resultType="com.misyakuji.entity.UserInfo">
+        SELECT * FROM user_info WHERE user_id = #{userId}
+    </select>
+
+    <insert id="insertUserInfo" parameterType="com.misyakuji.entity.UserInfo">
+        INSERT INTO user_info (user_id, mobile, phone, email, seat, entity, leader, position, join_day, `group`) 
+        VALUES (#{userId}, #{mobile}, #{phone}, #{email}, #{seat}, #{entity}, #{leader}, #{position}, #{joinDay}, #{group})
+    </insert>
+
+    <update id="updateUserInfo" parameterType="com.misyakuji.entity.UserInfo">
+        UPDATE user_info 
+        SET mobile = #{mobile}, phone = #{phone}, email = #{email}, seat = #{seat}, 
+            entity = #{entity}, leader = #{leader}, position = #{position}, 
+            join_day = #{joinDay}, `group` = #{group} 
+        WHERE user_id = #{userId}
+    </update>
+
+</mapper>
