@@ -7,11 +7,15 @@ import org.springframework.http.HttpStatus;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor(staticName = "of")
+@AllArgsConstructor
 public class ApiResponse<T> {
     private Integer code;   // HTTP 状态码
     private String message; // 错误信息
     private T data;         // 数据
+
+    public static <T> ApiResponse<T> of(Integer code, String message, T data) {
+        return new ApiResponse<>(code, message, data);
+    }
 
     public static <T> ApiResponse<T> success(T data) {
         return of(HttpStatus.OK.value(), "操作成功", data);
