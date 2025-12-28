@@ -9,14 +9,14 @@ USE user_management;
 -- 1. 用户账户表 (users) 测试数据
 -- ========================================
 INSERT INTO biz_users (user_id, username, password_hash, permission_level, status, register_time, last_login_time) VALUES
-(1, 'admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 3, 1, '2023-01-01 09:00:00', '2025-12-20 10:30:00'),
-(2, 'manager_zhang', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 2, 1, '2023-02-15 14:20:00', '2025-12-19 16:45:00'),
-(3, 'manager_li', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 2, 1, '2023-03-10 11:30:00', '2025-12-18 09:15:00'),
-(4, 'zhangsan', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 1, 1, '2023-04-05 16:45:00', '2025-12-20 08:00:00'),
-(5, 'lisi', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 1, 1, '2023-05-12 10:15:00', '2025-12-19 14:20:00'),
-(6, 'wangwu', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 1, 1, '2023-06-20 13:30:00', '2025-12-18 17:30:00'),
-(7, 'zhaoliu', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 1, 0, '2023-07-08 09:45:00', '2025-11-15 12:00:00'),
-(8, 'qianqi', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 1, 2, '2023-08-15 15:20:00', '2025-10-20 11:45:00');
+(1, 'admin', '$2a$10$iWT4xO7kIO/RpOpezqhZruOzbDrAdg5YresOSmOW7Rq9YMhSJH6hi', 3, 1, '2023-01-01 09:00:00', '2025-12-20 10:30:00'),
+(2, 'manager_zhang', '$2a$10$8KQxj0nB3F/R6D1umCKZxO4uwXCJNkUApUIRrPzqYW/MUzghxTH4C', 2, 1, '2023-02-15 14:20:00', '2025-12-19 16:45:00'),
+(3, 'manager_li', '$2a$10$8KQxj0nB3F/R6D1umCKZxO4uwXCJNkUApUIRrPzqYW/MUzghxTH4C', 2, 1, '2023-03-10 11:30:00', '2025-12-18 09:15:00'),
+(4, 'zhangsan', '$2a$10$8KQxj0nB3F/R6D1umCKZxO4uwXCJNkUApUIRrPzqYW/MUzghxTH4C', 1, 1, '2023-04-05 16:45:00', '2025-12-20 08:00:00'),
+(5, 'lisi', '$2a$10$8KQxj0nB3F/R6D1umCKZxO4uwXCJNkUApUIRrPzqYW/MUzghxTH4C', 1, 1, '2023-05-12 10:15:00', '2025-12-19 14:20:00'),
+(6, 'wangwu', '$2a$10$8KQxj0nB3F/R6D1umCKZxO4uwXCJNkUApUIRrPzqYW/MUzghxTH4C', 1, 1, '2023-06-20 13:30:00', '2025-12-18 17:30:00'),
+(7, 'zhaoliu', '$2a$10$8KQxj0nB3F/R6D1umCKZxO4uwXCJNkUApUIRrPzqYW/MUzghxTH4C', 1, 0, '2023-07-08 09:45:00', '2025-11-15 12:00:00'),
+(8, 'qianqi', '$2a$10$8KQxj0nB3F/R6D1umCKZxO4uwXCJNkUApUIRrPzqYW/MUzghxTH4C', 1, 2, '2023-08-15 15:20:00', '2025-10-20 11:45:00');
 
 -- ========================================
 -- 2. 部门表 (department) 测试数据
