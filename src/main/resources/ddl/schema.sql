@@ -1,7 +1,7 @@
 -- 创建borrowers表，用于存储借款人信息
 CREATE TABLE IF NOT EXISTS borrowers (
-                                         id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键，自增ID',
-                                         name VARCHAR(100) NOT NULL COMMENT '借款人姓名',
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键，自增ID',
+    name VARCHAR(100) NOT NULL COMMENT '借款人姓名',
     tel VARCHAR(255) COMMENT '联系电话',
     start_date DATE COMMENT '借款开始日期',
     end_date DATE COMMENT '清账日期（如果已清账，则为最后还款日期；否则为空）',
@@ -18,9 +18,9 @@ CREATE TABLE IF NOT EXISTS borrowers (
 
 -- 创建borrower_details表，用于记录所有与借款相关的交易细节
 CREATE TABLE IF NOT EXISTS borrower_details (
-                                                id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键，自增ID',
-                                                borrower_id INT NOT NULL COMMENT '外键，关联到borrowers表的id',
-                                                transaction_type ENUM('Loan', 'Repayment', 'Interest') NOT NULL COMMENT '交易类型：Loan-借款，Repayment-还款，Interest-利息',
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键，自增ID',
+    borrower_id INT NOT NULL COMMENT '外键，关联到borrowers表的id',
+    transaction_type ENUM('Loan', 'Repayment', 'Interest') NOT NULL COMMENT '交易类型：Loan-借款，Repayment-还款，Interest-利息',
     amount DECIMAL(10, 2) NOT NULL COMMENT '交易金额',
     transaction_date DATE NOT NULL COMMENT '交易日期',
     notes TEXT COMMENT '其他备注或说明',
@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS borrower_details (
 
 -- 创建users表，用于存储用户登录和权限信息
 CREATE TABLE IF NOT EXISTS users (
-                                     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键，用户ID',
-                                     username VARCHAR(50) NOT NULL COMMENT '用户名，登录账号',
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键，用户ID',
+    username VARCHAR(50) NOT NULL COMMENT '用户名，登录账号',
     password VARCHAR(100) NOT NULL COMMENT '密码，BCrypt加密存储',
     role ENUM('ROLE_ADMIN', 'ROLE_USER', 'ROLE_MANAGER', 'ROLE_GUEST') NOT NULL DEFAULT 'ROLE_USER' COMMENT '用户角色：ROLE_ADMIN-管理员，ROLE_USER-普通用户，ROLE_MANAGER-经理，ROLE_GUEST-访客',
     enabled TINYINT(1) DEFAULT 1 COMMENT '账户状态：1-启用，0-禁用',
@@ -50,9 +50,9 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- 创建user_info表，用于存储用户详细个人信息
 CREATE TABLE IF NOT EXISTS user_info (
-                                         id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键，自增ID',
-                                         user_id BIGINT NOT NULL COMMENT '关联用户ID，外键',
-                                         real_name VARCHAR(50) COMMENT '真实姓名',
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键，自增ID',
+    user_id BIGINT NOT NULL COMMENT '关联用户ID，外键',
+    real_name VARCHAR(50) COMMENT '真实姓名',
     mobile VARCHAR(20) COMMENT '手机号码',
     phone VARCHAR(20) COMMENT '固定电话',
     email VARCHAR(100) COMMENT '电子邮箱',
