@@ -5,14 +5,10 @@ server:
 #  address: 127.0.0.1
 
 spring:
-#  security:
-#    user:
-#      name: admin
-#      password: 123456
   application:
     name: jasper-report-api
   datasource:
-    url: jdbc:mariadb://localhost:3306/debt_bills?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mariadb://localhost:3306/user_management?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
     username: jasper_user
     password: ENC(vs4g5IUa7nOVObexLFLfFFNNfrsTcRbMt0euIV7UaYJAU4/lQlXzvgzyLRnXQLOE)
     driver-class-name: org.mariadb.jdbc.Driver
