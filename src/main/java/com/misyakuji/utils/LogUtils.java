@@ -109,7 +109,7 @@ public class LogUtils {
         }
         
         String clientIp = getClientIpAddress(request);
-        String userAgent = request.getHeader("User-Agent");
+        String userAgent = request.getHeader("BizUser-Agent");
         String method = request.getMethod();
         String uri = request.getRequestURI();
         

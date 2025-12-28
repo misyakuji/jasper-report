@@ -24,5 +24,16 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> fail(HttpStatus status, String message) {
         return of(status.value(), message, null);
     }
-}
 
+    public static <T> ApiResponse<T> error(String message) {
+        return of(HttpStatus.INTERNAL_SERVER_ERROR.value(), message, null);
+    }
+
+    public static <T> ApiResponse<T> error(Integer code, String message) {
+        return of(code, message, null);
+    }
+
+    public boolean isSuccess() {
+        return HttpStatus.OK.value() == this.code;
+    }
+}

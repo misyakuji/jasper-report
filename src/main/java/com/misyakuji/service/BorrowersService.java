@@ -1,11 +1,16 @@
 package com.misyakuji.service;
 
+import com.misyakuji.entity.BizUser;
 import com.misyakuji.entity.Borrowers;
 import com.misyakuji.entity.BorrowerDetails;
 import com.misyakuji.enums.TransactionType;
 import com.misyakuji.repository.BorrowersRepository;
+import com.misyakuji.repository.BizUserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,19 +21,28 @@ import java.util.stream.Collectors;
 /**
  * 借款人服务层实现类
  * 提供借款人数据的业务逻辑处理，包括增删改查和财务信息自动更新等功能
+ * 
+ * @since v2.0 新增用户关联功能，支持借款人与系统用户的关联管理
  */
 @Service
+@Transactional
 public class BorrowersService {
 
     // 注入借款人数据访问层组件
     private final BorrowersRepository repository;
+    
+    // 注入用户数据访问层组件
+    private final BizUserRepository bizUserRepository;
 
     /**
      * 构造函数，通过依赖注入获取数据访问层组件
      * @param repository 借款人数据访问层组件
+     * @param bizUserRepository 用户数据访问层组件
      */
-    public BorrowersService(BorrowersRepository repository) {
+    @Autowired
+    public BorrowersService(BorrowersRepository repository, BizUserRepository bizUserRepository) {
         this.repository = repository;
+        this.bizUserRepository = bizUserRepository;
     }
 
     /**
@@ -48,6 +62,18 @@ public class BorrowersService {
      */
     public Borrowers getById(Integer id) {
         // 查找指定ID的借款人，如果不存在则抛出异常
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Borrower not found"));
+    }
+
+    /**
+     * 根据ID查询借款人信息（包含用户关联信息）
+     * @param id 借款人ID
+     * @return 查询到的借款人实体对象（包含用户信息）
+     * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
+     */
+    public Borrowers getByIdWithUser(Integer id) {
+        // 查找指定ID的借款人，包含用户关联信息
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Borrower not found"));
     }
@@ -74,7 +100,7 @@ public class BorrowersService {
         return repository.findById(id)
                 .map(existing -> {
                     // 设置ID以确保更新操作而非创建新记录
-                    borrower.setId(id);
+                    borrower.setBorrowerId(id);
                     // 保存更新后的借款人信息
                     return repository.save(borrower);
                 })
@@ -209,7 +235,180 @@ public class BorrowersService {
     public List<Borrowers> calculatorAll() {
         return getAll().stream()
                 .filter(borrower -> borrower.getEndDate() == null) // 过滤条件
-                .map(borrower -> calculator(borrower.getId()))
+                .map(borrower -> calculator(borrower.getBorrowerId()))
                 .collect(Collectors.toList());
+    }
+
+    // ==================== v2.0 新增：用户关联相关方法 ====================
+
+    /**
+     * 根据用户ID查询关联的借款人列表
+     * @param userId 用户ID
+     * @return 关联的借款人列表
+     */
+    public List<Borrowers> getByUserId(Integer userId) {
+        return repository.findByBizUserUserId(userId);
+    }
+
+    /**
+     * 根据用户查询关联的借款人列表
+     * @param bizUser 用户对象
+     * @return 关联的借款人列表
+     */
+    public List<Borrowers> getByUser(BizUser bizUser) {
+        return repository.findByBizUser(bizUser);
+    }
+
+    /**
+     * 查询所有未关联用户的借款人
+     * @return user_id为空的借款人列表
+     */
+    public List<Borrowers> getUnlinkedBorrowers() {
+        return repository.findByBizUserIsNull(Sort.by(Sort.Direction.ASC, "borrowerId"));
+    }
+
+    /**
+     * 检查指定用户是否已关联借款人
+     * @param userId 用户ID
+     * @return 存在关联记录的数量
+     */
+    public boolean hasLinkedBorrowers(Integer userId) {
+        return repository.countByBizUserUserId(userId) > 0;
+    }
+
+    /**
+     * 关联借款人到指定用户
+     * @param borrowerId 借款人ID
+     * @param userId 用户ID
+     * @return 更新后的借款人对象
+     * @throws EntityNotFoundException 当借款人或用户不存在时抛出
+     * @throws IllegalArgumentException 当用户已关联其他借款人时抛出
+     */
+    public Borrowers linkToUser(Integer borrowerId, Integer userId) {
+        // 验证借款人存在
+        Borrowers borrower = repository.findById(borrowerId)
+                .orElseThrow(() -> new EntityNotFoundException("Borrower not found with id: " + borrowerId));
+        
+        // 验证用户存在
+        BizUser bizUser = bizUserRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("BizUser not found with id: " + userId));
+        
+        // 检查用户是否已关联其他借款人（如果业务需要限制一个用户只能关联一个借款人）
+        long existingCount = repository.countByBizUserUserId(userId);
+        if (existingCount > 0) {
+            // 根据业务需求，这里可以选择抛出异常或允许一个用户关联多个借款人
+            throw new IllegalArgumentException("BizUser already has linked borrowers");
+        }
+        
+        // 建立关联关系
+        borrower.setBizUser(bizUser);
+        
+        // 保存更新
+        return repository.save(borrower);
+    }
+
+    /**
+     * 取消借款人与用户的关联
+     * @param borrowerId 借款人ID
+     * @return 更新后的借款人对象
+     * @throws EntityNotFoundException 当借款人不存在时抛出
+     */
+    public Borrowers unlinkFromUser(Integer borrowerId) {
+        // 验证借款人存在
+        Borrowers borrower = repository.findById(borrowerId)
+                .orElseThrow(() -> new EntityNotFoundException("Borrower not found with id: " + borrowerId));
+        
+        // 取消关联关系
+        borrower.setBizUser(null);
+        
+        // 保存更新
+        return repository.save(borrower);
+    }
+
+    /**
+     * 根据用户ID或借款人姓名搜索借款人
+     * @param userId 用户ID（可为空）
+     * @param name 借款人姓名（可为空）
+     * @return 匹配的借款人列表
+     */
+    public List<Borrowers> searchBorrowers(Integer userId, String name) {
+        if (userId != null && name != null && !name.trim().isEmpty()) {
+            return repository.findByUserIdOrNameContaining(userId, name.trim());
+        } else if (userId != null) {
+            return repository.findByBizUserUserId(userId);
+        } else if (name != null && !name.trim().isEmpty()) {
+            return repository.findByUserIdOrNameContaining(null, name.trim());
+        } else {
+            return getAll();
+        }
+    }
+
+    /**
+     * 批量关联借款人到用户
+     * @param borrowerIds 借款人ID列表
+     * @param userId 用户ID
+     * @return 关联成功的借款人列表
+     * @throws EntityNotFoundException 当用户不存在时抛出
+     */
+    @Transactional
+    public List<Borrowers> batchLinkToUser(List<Integer> borrowerIds, Integer userId) {
+        // 验证用户存在
+        BizUser bizUser = bizUserRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("BizUser not found with id: " + userId));
+        
+        // 批量获取所有借款人
+        List<Borrowers> borrowers = repository.findAllById(borrowerIds);
+        
+        // 批量更新关联
+        borrowers.forEach(borrower -> borrower.setBizUser(bizUser));
+        
+        // 批量保存
+        return repository.saveAll(borrowers);
+    }
+
+    /**
+     * 获取借款人的完整信息（包含用户信息和交易明细）
+     * @param borrowerId 借款人ID
+     * @return 包含完整信息的借款人对象
+     * @throws EntityNotFoundException 当借款人不存在时抛出
+     */
+    public Borrowers getBorrowerWithFullDetails(Integer borrowerId) {
+        List<Borrowers> borrowers = repository.findAllWithUserAndDetails();
+        return borrowers.stream()
+                .filter(b -> b.getBorrowerId().equals(borrowerId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Borrower not found with id: " + borrowerId));
+    }
+
+    /**
+     * 根据用户ID获取关联借款人的完整信息
+     * @param userId 用户ID
+     * @return 包含完整信息的借款人列表
+     */
+    public List<Borrowers> getBorrowersWithFullDetailsByUserId(Integer userId) {
+        return repository.findByUserIdWithDetails(userId);
+    }
+
+    // ==================== 兼容性方法 - 保持向后兼容 ====================
+
+    /**
+     * 向后兼容：根据用户ID查询关联的借款人列表（Long类型）
+     * @param userId 用户ID（Long类型）
+     * @return 关联的借款人列表
+     */
+    @Deprecated
+    public List<Borrowers> getByUserId(Long userId) {
+        return getByUserId(userId != null ? userId.intValue() : null);
+    }
+
+    /**
+     * 向后兼容：关联借款人到指定用户（Long类型）
+     * @param borrowerId 借款人ID
+     * @param userId 用户ID（Long类型）
+     * @return 更新后的借款人对象
+     */
+    @Deprecated
+    public Borrowers linkToUser(Integer borrowerId, Long userId) {
+        return linkToUser(borrowerId, userId != null ? userId.intValue() : null);
     }
 }

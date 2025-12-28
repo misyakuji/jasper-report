@@ -45,7 +45,7 @@ public class BorrowerDetailsAspect {
     @AfterReturning(value = "execution(* com.misyakuji.service.BorrowerDetailsService.create(..))", returning = "result")
     public void afterCreate(BorrowerDetails result) {
         if (result != null && result.getBorrower() != null) {
-            Integer borrowerId = result.getBorrower().getId();
+            Integer borrowerId = result.getBorrower().getBorrowerId();
             LogUtils.logBusinessOperation("创建BorrowerDetails后触发calculator", null, "borrowerId: " + borrowerId);
             borrowersService.calculator(borrowerId);
         }
@@ -57,7 +57,7 @@ public class BorrowerDetailsAspect {
     @AfterReturning(value = "execution(* com.misyakuji.service.BorrowerDetailsService.update(..))", returning = "result")
     public void afterUpdate(BorrowerDetails result) {
         if (result != null && result.getBorrower() != null) {
-            Integer borrowerId = result.getBorrower().getId();
+            Integer borrowerId = result.getBorrower().getBorrowerId();
             LogUtils.logBusinessOperation("更新BorrowerDetails后触发calculator", null, "borrowerId: " + borrowerId);
             borrowersService.calculator(borrowerId);
         }
@@ -76,7 +76,7 @@ public class BorrowerDetailsAspect {
         Integer borrowerId = null;
         
         if (borrowerDetails != null && borrowerDetails.getBorrower() != null) {
-            borrowerId = borrowerDetails.getBorrower().getId();
+            borrowerId = borrowerDetails.getBorrower().getBorrowerId();
             LogUtils.logDatabaseOperation("SELECT", "borrower_details", "id = " + id, 1);
         }
         
@@ -105,7 +105,7 @@ public class BorrowerDetailsAspect {
     @AfterReturning(value = "execution(* com.misyakuji.service.BorrowerDetailsService.createAll(..))", returning = "result")
     public void afterCreateAll(List<BorrowerDetails> result) {
         if (result != null && !result.isEmpty() && result.getFirst() != null && result.getFirst().getBorrower() != null) {
-            Integer borrowerId = result.getFirst().getBorrower().getId();
+            Integer borrowerId = result.getFirst().getBorrower().getBorrowerId();
             LogUtils.logBusinessOperation("批量创建BorrowerDetails后触发calculator", null, 
                     "borrowerId: " + borrowerId + ", count: " + result.size());
             borrowersService.calculator(borrowerId);
@@ -118,7 +118,7 @@ public class BorrowerDetailsAspect {
     @AfterReturning(value = "execution(* com.misyakuji.service.BorrowerDetailsService.updateAll(..))", returning = "result")
     public void afterUpdateAll(List<BorrowerDetails> result) {
         if (result != null && !result.isEmpty() && result.getFirst() != null && result.getFirst().getBorrower() != null) {
-            Integer borrowerId = result.getFirst().getBorrower().getId();
+            Integer borrowerId = result.getFirst().getBorrower().getBorrowerId();
             LogUtils.logBusinessOperation("批量更新BorrowerDetails后触发calculator", null, 
                     "borrowerId: " + borrowerId + ", count: " + result.size());
             borrowersService.calculator(borrowerId);

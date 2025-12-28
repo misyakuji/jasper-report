@@ -29,7 +29,8 @@ public class BorrowerDetails {
      */
     @Id  // 标记为主键
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // 设置自增生成策略
-    private Integer id;
+    @Column(name = "detail_id")
+    private Integer detailId;
 
     /**
      * 关联的借款人对象
@@ -94,4 +95,5 @@ public class BorrowerDetails {
     @Column(name = "updated_time", insertable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private LocalDateTime updatedTime;
+
 }

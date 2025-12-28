@@ -2,6 +2,7 @@ package com.misyakuji.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,8 @@ import java.util.List;
 /**
  * 借款人实体类
  * 映射到数据库中的borrowers表，存储借款人的基本信息和财务概览
+ * 
+ * @since v2.0 新增用户外键关联，支持借款人与系统用户的关联
  */
 @Entity
 @Table(name = "borrowers")
@@ -28,8 +31,20 @@ public class Borrowers {
      * 自增生成策略
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // 设置自增生成策略
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "borrower_id")
+    private Integer borrowerId;
+
+    /**
+     * 关联的用户ID，外键
+     * 引用users表的主键
+     * 可为空，允许借款人不关联系统用户
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", 
+                foreignKey = @ForeignKey(name = "fk_borrowers_user"))
+    @JsonBackReference
+    private BizUser bizUser;
 
     /**
      * 借款人姓名
@@ -121,4 +136,5 @@ public class Borrowers {
     @OneToMany(mappedBy = "borrower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)  // 一对多关系配置
     @JsonManagedReference  // 解决JSON序列化的循环引用问题
     private List<BorrowerDetails> borrowerDetails;
+
 }

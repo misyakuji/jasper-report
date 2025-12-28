@@ -23,7 +23,7 @@ public class BorrowerDetailsService {
     public BorrowerDetails update(Integer id, BorrowerDetails borrower) {
         return repository.findById(id)
                 .map(existing -> {
-                    borrower.setId(id);
+                    borrower.setDetailId(id);
                     return repository.save(borrower);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("BorrowerDetail not found"));
@@ -34,7 +34,7 @@ public class BorrowerDetailsService {
     }
 
     public List<BorrowerDetails> findByBorrowerId(Integer borrowerId) {
-        return repository.findByBorrowerId(borrowerId);
+        return repository.findByBorrowerBorrowerId(borrowerId);
     }
     public List<BorrowerDetails> getAll() {
         return repository.findAll();

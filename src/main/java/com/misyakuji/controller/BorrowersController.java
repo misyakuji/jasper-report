@@ -12,6 +12,8 @@ import java.util.List;
 /**
  * 借款人信息管理控制器
  * 提供借款人信息的增删改查及自动更新等RESTful API接口
+ * 
+ * @since v2.0 新增用户关联相关API接口
  */
 @RestController
 @RequestMapping(value = "/borrowers", produces = "application/json")
@@ -116,6 +118,105 @@ public class BorrowersController {
         return ResponseEntity.noContent().build();
     }
 
+    // ==================== v2.0 新增：用户关联相关API ====================
 
+    /**
+     * 根据用户ID查询关联的借款人列表
+     * @param userId 用户ID
+     * @return 关联的借款人列表及HTTP 200状态码
+     */
+    @GetMapping("/user/{userId}")  // GET /borrowers/bizUser/{userId}
+    public ResponseEntity<List<Borrowers>> getByUserId(@PathVariable Integer userId) {
+        return ResponseEntity.ok(service.getByUserId(userId));
+    }
 
+    /**
+     * 查询所有未关联用户的借款人
+     * @return 未关联用户的借款人列表及HTTP 200状态码
+     */
+    @GetMapping("/unlinked")  // GET /borrowers/unlinked
+    public ResponseEntity<List<Borrowers>> getUnlinkedBorrowers() {
+        return ResponseEntity.ok(service.getUnlinkedBorrowers());
+    }
+
+    /**
+     * 检查指定用户是否已关联借款人
+     * @param userId 用户ID
+     * @return 检查结果及HTTP 200状态码
+     */
+    @GetMapping("/check-linked/{userId}")  // GET /borrowers/check-linked/{userId}
+    public ResponseEntity<Boolean> checkUserLinked(@PathVariable Integer userId) {
+        return ResponseEntity.ok(service.hasLinkedBorrowers(userId));
+    }
+
+    /**
+     * 关联借款人到指定用户
+     * @param borrowerId 借款人ID
+     * @param userId 用户ID
+     * @return 更新成功的借款人对象及HTTP 200状态码
+     * @throws EntityNotFoundException 当借款人或用户不存在时抛出
+     * @throws IllegalArgumentException 当用户已关联其他借款人时抛出
+     */
+    @PostMapping("/{borrowerId}/link/{userId}")  // POST /borrowers/{borrowerId}/link/{userId}
+    public ResponseEntity<Borrowers> linkToUser(@PathVariable Integer borrowerId, @PathVariable Integer userId) {
+        return ResponseEntity.ok(service.linkToUser(borrowerId, userId));
+    }
+
+    /**
+     * 取消借款人与用户的关联
+     * @param borrowerId 借款人ID
+     * @return 更新成功的借款人对象及HTTP 200状态码
+     * @throws EntityNotFoundException 当借款人不存在时抛出
+     */
+    @PostMapping("/{borrowerId}/unlink")  // POST /borrowers/{borrowerId}/unlink
+    public ResponseEntity<Borrowers> unlinkFromUser(@PathVariable Integer borrowerId) {
+        return ResponseEntity.ok(service.unlinkFromUser(borrowerId));
+    }
+
+    /**
+     * 根据用户ID或借款人姓名搜索借款人
+     * @param userId 用户ID（可选，查询参数）
+     * @param name 借款人姓名（可选，查询参数）
+     * @return 匹配的借款人列表及HTTP 200状态码
+     */
+    @GetMapping("/search")  // GET /borrowers/search?userId=1&name=张
+    public ResponseEntity<List<Borrowers>> searchBorrowers(
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) String name) {
+        return ResponseEntity.ok(service.searchBorrowers(userId, name));
+    }
+
+    /**
+     * 批量关联借款人到用户
+     * @param borrowerIds 借款人ID列表
+     * @param userId 用户ID
+     * @return 关联成功的借款人列表及HTTP 200状态码
+     * @throws EntityNotFoundException 当用户不存在时抛出
+     */
+    @PostMapping("/batch-link/{userId}")  // POST /borrowers/batch-link/{userId}
+    public ResponseEntity<List<Borrowers>> batchLinkToUser(@RequestBody List<Integer> borrowerIds, 
+                                                       @PathVariable Integer userId) {
+        return ResponseEntity.ok(service.batchLinkToUser(borrowerIds, userId));
+    }
+
+    /**
+     * 获取借款人的完整信息（包含用户信息和交易明细）
+     * @param borrowerId 借款人ID
+     * @return 包含完整信息的借款人对象及HTTP 200状态码
+     * @throws EntityNotFoundException 当借款人不存在时抛出
+     */
+    @GetMapping("/{borrowerId}/full-details")  // GET /borrowers/{borrowerId}/full-details
+    public ResponseEntity<Borrowers> getBorrowerWithFullDetails(@PathVariable Integer borrowerId) {
+        return ResponseEntity.ok(service.getBorrowerWithFullDetails(borrowerId));
+    }
+
+    /**
+     * 根据用户ID获取关联借款人的完整信息
+     * @param userId 用户ID
+     * @return 包含完整信息的借款人列表及HTTP 200状态码
+     */
+    @GetMapping("/user/{userId}/full-details")  // GET /borrowers/bizUser/{userId}/full-details
+    public ResponseEntity<List<Borrowers>> getBorrowersWithFullDetailsByUserId(@PathVariable Integer userId) {
+        return ResponseEntity.ok(service.getBorrowersWithFullDetailsByUserId(userId));
+    }
 }

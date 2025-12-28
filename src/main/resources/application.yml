@@ -44,10 +44,6 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss.SSS  # 时间格式化格式
     time-zone: GMT+8  # 设置时区为东八区
 
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.misyakuji.entity
-
 app:
   jwtSecret: a8f7b36e5c9d4b12a1fef52d9c4a8e9d3f1b6a2c5d8e4f9a7b3c1d6e8f5a4c7d
   jwtExpirationMs: 86400000

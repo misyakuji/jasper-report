@@ -1,7 +1,7 @@
 package com.misyakuji.controller;
 
-import com.misyakuji.entity.User;
-import com.misyakuji.mapper.UserMapper;
+import com.misyakuji.entity.BizUser;
+import com.misyakuji.repository.BizUserRepository;
 import com.misyakuji.utils.JwtUtils;
 import com.misyakuji.utils.TokenBlacklist;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class AuthController {
     private JwtUtils jwtUtils;
 
     @Autowired
-    private UserMapper userMapper;
+    private BizUserRepository bizUserRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -54,16 +54,17 @@ public class AuthController {
         String password = registerRequest.get("password");
         
         // 检查用户名是否已存在
-        if (userMapper.findByUsername(username) != null) {
+        if (bizUserRepository.findByUsername(username).isPresent()) {
             return Map.of("message", "用户名已存在");
         }
 
         // 创建新用户
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setRole("ROLE_USER");
-        userMapper.insertUser(user);
+        BizUser bizUser = new BizUser();
+        bizUser.setUsername(username);
+        bizUser.setPasswordHash(passwordEncoder.encode(password));
+        bizUser.setPermissionLevel(1);
+        bizUser.setStatus(1);
+        bizUserRepository.save(bizUser);
 
         return Map.of("message", "注册成功");
     }
