@@ -12,8 +12,12 @@ This is study project with jasper in Springboot.
 
 ### 1. maven运行
 ```shell
-#导入src/main/resources/ddl目录下的sql文件到数据库
-./mvnw spring-boot:run --jasypt.encryptor.password=SecretKey_jasper_mariadb
+# 1.创建环境变量文件.env，参照.env.example
+
+# 2.导入src/main/resources/ddl目录下的sql文件到数据库
+
+# 3.maven运行应用
+./mvnw spring-boot:run
 ```
 
 ### 2. 通过docker启动
