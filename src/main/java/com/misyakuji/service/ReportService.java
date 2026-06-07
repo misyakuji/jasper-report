@@ -1,6 +1,7 @@
 package com.misyakuji.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.misyakuji.entity.BorrowerDetails;
 import lombok.AllArgsConstructor;
@@ -23,9 +24,6 @@ public class ReportService {
 
     private final ResourceLoader resourceLoader;
 
-
-    private final ObjectMapper objectMapper;
-
     private final BorrowerDetailsService detailsService;
     /**
      * 统一生成报表逻辑
@@ -39,9 +37,13 @@ public class ReportService {
             // 加载 classpath 资源
             Resource template = resourceLoader.getResource("classpath:templates/debt_bill.jrxml");
             Resource jsonData = resourceLoader.getResource("classpath:templates/debt_bill_data.json");
+
+            // 解析 JSON 数据
+            ObjectMapper mapper = new ObjectMapper();
+            // 配置忽略未知字段（避免 id 等未定义字段报错）
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             // 解析JSON数据
-            List<BorrowerDetails> data = objectMapper.readValue(jsonData.getInputStream(), new TypeReference<>() {
-            });
+            List<BorrowerDetails> data = mapper.readValue(jsonData.getInputStream(), new TypeReference<>() {});
             // 生成报表
             byte[] pdfBytes = generateReport(template, data);
             return buildPdfResponse(pdfBytes, "report_example", inline);
@@ -61,7 +63,7 @@ public class ReportService {
             // 获取报表模板
             Resource template = resourceLoader.getResource("classpath:templates/debt_bill.jrxml");
 
-            byte[] pdfBytes = null;
+            byte[] pdfBytes;
             try {
                 // 生成报表
                 pdfBytes = generateReport(template, detailList);
