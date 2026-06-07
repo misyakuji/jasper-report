@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk-alpine
+FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
 
 # 创建日志目录

@@ -7,10 +7,12 @@ server:
 spring:
   application:
     name: jasper-report-api
+  config:
+    import: optional:file:.env[.properties]
   datasource:
-    url: jdbc:mariadb://localhost:3306/user_management?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
-    username: jasper_user
-    password: ENC(vs4g5IUa7nOVObexLFLfFFNNfrsTcRbMt0euIV7UaYJAU4/lQlXzvgzyLRnXQLOE)
+    url: jdbc:mariadb://localhost:3306/${DB_NAME}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=${TZ}&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
     hikari:
       maximum-pool-size: 10        # MariaDB支持连接池
@@ -22,8 +24,8 @@ spring:
   sql:
     init:
       mode: never
-      schema-locations: classpath:ddl/schema.sql
-      data-locations: classpath:ddl/data.sql
+      schema-locations: classpath:ddl/01-schema.sql
+      data-locations: classpath:ddl/02-data.sql
 
   jpa:
     database-platform: org.hibernate.dialect.MariaDBDialect
@@ -47,10 +49,7 @@ spring:
 app:
   jwtSecret: a8f7b36e5c9d4b12a1fef52d9c4a8e9d3f1b6a2c5d8e4f9a7b3c1d6e8f5a4c7d
   jwtExpirationMs: 86400000
-# Jasypt
-jasypt:
-  encryptor:
-    password: SecretKey_jasper_mariadb
+
 logging:
   # 使用logback-spring.xml配置文件
   config: classpath:logback-spring.xml

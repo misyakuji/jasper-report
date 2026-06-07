@@ -1,52 +1,159 @@
-version: '3.8'
+# ==============================================================================
+# Docker Compose V2 服务编排配置
+# 项目: Jasper Report API
+# 技术栈: Spring Boot 3.5.9 + MariaDB 11.8 LTS
+# ==============================================================================
 
 services:
+  # ============================================================================
+  # MariaDB 数据库服务
+  # 版本: 11.8 LTS (长期支持版本至 2028年5月)
+  # ============================================================================
   mariadb:
-    image: mariadb:10.11
+    image: wodby/mariadb:11.8
     container_name: mariadb-jasper
     restart: unless-stopped
+
+    # 环境变量配置
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: debt_bills
-      MYSQL_USER: jasper_user
-      MYSQL_PASSWORD: jasper_pass
+      # === 同时提供 MYSQL_ 和 MARIADB_ 变量（双保险）===
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MARIADB_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MARIADB_USERNAME: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      TZ: ${TZ}
+
+    # 端口映射（仅绑定到 localhost，提升安全性）
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
+
+    # 数据卷挂载
     volumes:
-      - mariadb_data:/var/lib/mysql
-      - ./docker/init:/docker-entrypoint-initdb.d
+      - mariadb_data:/var/lib/mysql                                    # 数据库持久化存储
+      - ./src/main/resources/ddl:/docker-entrypoint-initdb.d:ro        # 初始化脚本（只读）
+
+    # 网络配置
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
 
+    # 健康检查（使用官方推荐的健康检查脚本）
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -uroot -p${DB_ROOT_PASSWORD} --silent || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+      start_period: 30s
+
+    # 资源限制配置
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2048M
+        reservations:
+          cpus: '1.0'
+          memory: 1024M
+
+    # 日志配置（JSON 格式，自动轮转）
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # MariaDB 服务器参数优化
+#    command:
+#      - --character-set-server=utf8mb4                    # 字符集：支持 emoji 等特殊字符
+#      - --collation-server=utf8mb4_unicode_ci             # 排序规则：Unicode 标准
+#      - --default-time-zone=${DEFAULT_TIME_ZONE}          # 时区设置
+#      - --max-connections=200                             # 最大连接数
+#      - --innodb-buffer-pool-size=512M                    # InnoDB 缓冲池大小
+#      - --innodb-log-file-size=128M                       # InnoDB 日志文件大小
+#      - --innodb-flush-log-at-trx-commit=2                # 刷新策略：每秒刷新（性能优化）
+#      - --slow-query-log=1                                # 启用慢查询日志
+#      - --slow-query-log-file=/var/lib/mysql/slow.log     # 慢查询日志路径
+#      - --long-query-time=2                               # 慢查询阈值：2秒
+
+  # ============================================================================
+  # Spring Boot 应用服务
+  # 框架: Spring Boot 3.5.9 + Jetty
+  # JDK: Eclipse Temurin 21
+  # ============================================================================
   springboot-app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: jasper-report-app
     restart: unless-stopped
+
+    # 端口映射
     ports:
       - "8088:8088"
+
+    # 环境变量配置
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/debt_bills?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
-      - SPRING_DATASOURCE_USERNAME=jasper_user
-      - SPRING_DATASOURCE_PASSWORD=jasper_pass
+      # 数据库连接配置
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/${DB_NAME}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=${TZ}&allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.mariadb.jdbc.Driver
+      # 系统配置
+      - TZ=${TZ}
+      # JVM 参数配置（从 .env 读取，便于调整）
+      - JAVA_OPTS=-Xms${JAVA_XMS} -Xmx${JAVA_XMX} -XX:+UseG1GC -XX:MaxGCPauseMillis=${JAVA_MAX_GC_PAUSE}
+
+    # 依赖关系：等待 MariaDB 健康检查通过后再启动
     depends_on:
       mariadb:
         condition: service_healthy
+
+    # 网络配置
     networks:
       - app-network
+
+    # 日志目录挂载
     volumes:
       - ./logs:/app/logs
 
+    # 应用健康检查（通过 Actuator 端点）
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8088/api/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    # 资源限制配置
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+    # 日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ==============================================================================
+# 数据卷定义
+# ==============================================================================
 volumes:
   mariadb_data:
     driver: local
 
+# ==============================================================================
+# 网络定义（桥接模式，实现容器间隔离通信）
+# ==============================================================================
 networks:
   app-network:
     driver: bridge
