@@ -25,7 +25,7 @@ This is study project with jasper in Springboot.
 # 步骤 1: 使用maven构建项目
 chmod +x mvnw && ./mvnw clean package '-Dmaven.test.skip=true'
 
-# 步骤 2: 创建环境变量文件, 以cp为例,复制simple.env到实际的.env
+# 步骤 2: 创建环境变量文件.env, 此处以cp为例
 cp .env.example .env
 
 # 步骤 3: 构建并启动服务
@@ -83,17 +83,3 @@ docker compose logs --tail 100 springboot-app
 
 ```
 
-⚠️ 重要注意事项
-1. 安全性
-   ✅ .env 文件已加入 .gitignore，不会提交到 Git
-   ✅ 数据库端口仅绑定到 127.0.0.1，外部无法访问
-   ✅ 使用环境变量管理敏感信息，避免硬编码
-2. 数据持久化
-   ✅ MariaDB 数据存储在 mariadb_data 卷中，即使删除容器数据也不会丢失
-   ✅ 应用日志挂载到 ./logs 目录，便于查看和备份
-3. 初始化脚本执行顺序
-   Docker 会按文件名排序执行 /docker-entrypoint-initdb.d/ 中的脚本：
-   data.sql - 插入测试数据
-   init.sql - 用户授权
-   schema.sql - 创建表结构
-   注意: 如果数据库已存在（数据卷中有数据），初始化脚本不会再次执行。
