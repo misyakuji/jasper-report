@@ -2,8 +2,9 @@
 -- Jasper Report 项目 - 数据库初始化脚本
 -- 执行时机：容器首次初始化时
 -- =============================================
---USE ${DB_NAME};
-USE user_management;
+
+-- USE ${DB_NAME};
+
 -- 创建biz_users表，用于存储用户登录和权限信息
 CREATE TABLE IF NOT EXISTS biz_users (
     user_id INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID，主键',
