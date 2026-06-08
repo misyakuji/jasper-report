@@ -9,6 +9,7 @@ import com.misyakuji.service.BorrowersService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -52,6 +53,7 @@ public class BizUserController {
      * @return 包含所有用户的列表及HTTP 200状态码
      */
     @GetMapping  // GET /users
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BizUser>> getAll() {
         return ResponseEntity.ok(bizUserService.getAll());
     }
@@ -61,6 +63,7 @@ public class BizUserController {
      * @return 包含所有用户及其详细信息的列表及HTTP 200状态码
      */
     @GetMapping("/with-info")  // GET /users/with-info
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BizUser>> getAllWithUserInfo() {
         return ResponseEntity.ok(bizUserService.getAllWithUserInfo());
     }
@@ -106,6 +109,7 @@ public class BizUserController {
      * @throws IllegalArgumentException 当用户名已存在时抛出
      */
     @PostMapping  // POST /users
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BizUser> create(@RequestBody BizUser bizUser) {
         return new ResponseEntity<>(bizUserService.create(bizUser), HttpStatus.CREATED);
     }
@@ -116,6 +120,7 @@ public class BizUserController {
      * @return 创建成功的用户对象及HTTP 201状态码
      */
     @PostMapping("/with-info")  // POST /users/with-info
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BizUser> createWithUserInfo(@RequestBody Map<String, Object> request) {
         BizUser bizUser = mapToUser(Collections.unmodifiableMap((Map<String, Object>) request.get("user")));
         BizUserInfo bizUserInfo = mapToUserInfo(Collections.unmodifiableMap((Map<String, Object>) request.get("bizUserInfo")));
@@ -131,6 +136,7 @@ public class BizUserController {
      * @throws EntityNotFoundException 当指定ID的用户不存在时抛出
      */
     @PutMapping("/{userId}")  // PUT /users/{userId}
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BizUser> update(@PathVariable Integer userId, @RequestBody BizUser bizUser) {
         return ResponseEntity.ok(bizUserService.update(userId, bizUser));
     }
@@ -142,6 +148,7 @@ public class BizUserController {
      * @throws EntityNotFoundException 当指定ID的用户不存在时抛出
      */
     @DeleteMapping("/{userId}")  // DELETE /users/{userId}
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Integer userId) {
         bizUserService.delete(userId);
         return ResponseEntity.noContent().build();
@@ -207,6 +214,7 @@ public class BizUserController {
      * @return 重置结果及HTTP 200状态码
      */
     @PostMapping("/{userId}/reset-password")  // POST /users/{userId}/reset-password
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> resetPassword(@PathVariable Integer userId, 
                                                        @RequestBody Map<String, String> request) {
         String newPassword = request.get("newPassword");
@@ -263,6 +271,7 @@ public class BizUserController {
      * @throws EntityNotFoundException 当指定用户的详细信息不存在时抛出
      */
     @DeleteMapping("/{userId}/info")  // DELETE /users/{userId}/info
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUserInfo(@PathVariable Integer userId) {
         bizUserInfoService.deleteByUserId(userId);
         return ResponseEntity.noContent().build();

@@ -181,7 +181,7 @@ public class BorrowersController {
      */
     @GetMapping("/search")  // GET /borrowers/search?userId=1&name=张
     public ResponseEntity<List<Borrowers>> searchBorrowers(
-            @RequestParam(required = false) Integer userId,
+            @RequestParam Integer userId,
             @RequestParam(required = false) String name) {
         return ResponseEntity.ok(service.searchBorrowers(userId, name));
     }

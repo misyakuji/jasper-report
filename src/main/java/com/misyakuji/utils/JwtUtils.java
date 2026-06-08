@@ -34,23 +34,27 @@ public class JwtUtils {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
-        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
-
         return Jwts.builder()
                 .setId(UUID.randomUUID().toString())
                 .setSubject(username)
                 .claim("role", role)
+                .setIssuer("jasper-report")
+                .setAudience("jasper-report-api")
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
+                .signWith(signingKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    private SecretKey signingKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
      * 解析 Token：用旧版 parser() 方法（0.13.x 兼容）
      */
     public Claims parseToken(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        SecretKey key = signingKey();
 
         try {
             // 关键修改：用 parser() 替代 parserBuilder()，0.13.x 仍支持

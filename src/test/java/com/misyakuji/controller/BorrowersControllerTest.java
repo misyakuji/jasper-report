@@ -114,7 +114,7 @@ class BorrowersControllerTest {
 
     @Test
     void searchBorrowers_shouldReturnResults() throws Exception {
-        mockMvc.perform(get("/borrowers/search").param("name", "王"))
+        mockMvc.perform(get("/borrowers/search").param("userId", "1").param("name", "王"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", is(not(empty()))));
     }

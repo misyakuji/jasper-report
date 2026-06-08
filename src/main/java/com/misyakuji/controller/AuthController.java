@@ -62,9 +62,14 @@ public class AuthController {
             return Map.of("message", "请求参数不存在");
         }
 
-        // 检查用户名是否已存在
+        // 密码复杂度校验
+        if (password.length() < 6) {
+            return Map.of("message", "密码长度不能少于6位");
+        }
+
+        // 检查用户名是否已存在（返回统一消息防止用户枚举）
         if (bizUserRepository.findByUsername(username).isPresent()) {
-            return Map.of("message", "用户名已存在");
+            return Map.of("message", "注册失败，请检查输入");
         }
 
         // 创建新用户

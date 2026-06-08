@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@WithMockUser(username = "admin")
+@WithMockUser(username = "admin", roles = "ADMIN")
 class BizUserInfoControllerTest {
 
     @Autowired

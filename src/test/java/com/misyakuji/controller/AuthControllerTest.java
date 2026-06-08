@@ -55,7 +55,7 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("用户名已存在"));
+                .andExpect(jsonPath("$.message").value("注册失败，请检查输入"));
     }
 
     @Test

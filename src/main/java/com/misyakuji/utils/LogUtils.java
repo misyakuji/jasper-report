@@ -109,7 +109,7 @@ public class LogUtils {
         }
         
         String clientIp = getClientIpAddress(request);
-        String userAgent = request.getHeader("BizUser-Agent");
+        String userAgent = request.getHeader("User-Agent");
         String method = request.getMethod();
         String uri = request.getRequestURI();
         
@@ -118,16 +118,12 @@ public class LogUtils {
     }
 
     /**
-     * 获取客户端真实IP地址
+     * 获取客户端真实IP地址（X-Forwarded-For 只取第一个可信值）
      */
     private static String getClientIpAddress(HttpServletRequest request) {
-        String[] headerNames = {"X-Forwarded-For", "Proxy-Client-IP", "WL-Proxy-Client-IP", "HTTP_X_FORWARDED_FOR"};
-        
-        for (String headerName : headerNames) {
-            String ip = request.getHeader(headerName);
-            if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-                return ip.split(",")[0].trim();
-            }
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (forwarded != null && !forwarded.isEmpty() && !"unknown".equalsIgnoreCase(forwarded)) {
+            return forwarded.split(",")[0].trim();
         }
         
         return request.getRemoteAddr();
@@ -140,13 +136,26 @@ public class LogUtils {
         if (args == null || args.length == 0) {
             return "无";
         }
-        
+
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < args.length; i++) {
             if (i > 0) sb.append(", ");
-            sb.append(formatObject(args[i]));
+            sb.append(maskSensitiveArgs(args[i]));
         }
         return sb.toString();
+    }
+
+    /**
+     * 脱敏敏感参数（密码、Token）
+     */
+    private static Object maskSensitiveArgs(Object arg) {
+        if (arg == null) return null;
+        String str = arg.toString();
+        if (str.contains("password") || str.contains("Password") || str.contains("token") || str.contains("Token")) {
+            return str.replaceAll("(\"password\"\\s*:\\s*\")[^\"]+(\")", "$1******$2")
+                      .replaceAll("(\"token\"\\s*:\\s*\")[^\"]+(\")", "$1******$2");
+        }
+        return arg;
     }
 
     /**

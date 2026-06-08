@@ -20,6 +20,7 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
       timeout: 3000ms
       lettuce:
         pool:
@@ -28,7 +29,7 @@ spring:
           min-idle: 4
 
   datasource:
-    url: jdbc:mariadb://localhost:3306/${DB_NAME}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=${TZ}&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=${TZ}&useSSL=${DB_SSL:false}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
@@ -65,8 +66,8 @@ spring:
     time-zone: GMT+8  # 设置时区为东八区
 
 app:
-  jwtSecret: a8f7b36e5c9d4b12a1fef52d9c4a8e9d3f1b6a2c5d8e4f9a7b3c1d6e8f5a4c7d
-  jwtExpirationMs: 86400000
+  jwtSecret: ${JWT_SECRET:a8f7b36e5c9d4b12a1fef52d9c4a8e9d3f1b6a2c5d8e4f9a7b3c1d6e8f5a4c7d}
+  jwtExpirationMs: ${JWT_EXPIRATION_MS:86400000}
 
 logging:
   # 使用logback-spring.xml配置文件

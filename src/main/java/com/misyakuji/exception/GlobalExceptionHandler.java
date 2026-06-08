@@ -59,17 +59,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ServletException.class)
     public ResponseEntity<ApiResponse<?>> handleServletException(ServletException ex) {
-        String message = "Servlet 异常: " + ex.getMessage();
-        
-        log.error("Servlet异常 - 用户: {} | 消息: {}", LogUtils.getCurrentUser(), message);
-        
-        try {
-            HttpStatus status = (HttpStatus) ex.getClass().getMethod("getStatusCode").invoke(ex);
-            return ResponseEntity.status(status).body(ApiResponse.fail(status, message));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.fail(HttpStatus.BAD_REQUEST, message));
-        }
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String message = "请求处理失败";
+
+        log.error("Servlet异常 - 用户: {} | 消息: {}", LogUtils.getCurrentUser(), ex.getMessage());
+
+        return ResponseEntity.status(status).body(ApiResponse.fail(status, message));
     }
 
     /**
@@ -113,7 +108,7 @@ public class GlobalExceptionHandler {
         LogUtils.logSecurityEvent("认证失败", username, ex.getMessage());
         
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.fail(HttpStatus.UNAUTHORIZED, "认证失败：" + ex.getMessage()));
+                .body(ApiResponse.fail(HttpStatus.UNAUTHORIZED, "认证失败"));
     }
 
     /**
@@ -122,9 +117,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(AccessDeniedException ex) {
         LogUtils.logSecurityEvent("权限不足", LogUtils.getCurrentUser(), ex.getMessage());
-        
+
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.fail(HttpStatus.FORBIDDEN, "权限不足：" + ex.getMessage()));
+                .body(ApiResponse.fail(HttpStatus.FORBIDDEN, "权限不足"));
     }
 
     /**
@@ -134,7 +129,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleEntityNotFound(EntityNotFoundException ex) {
         log.warn("实体不存在 - 用户: {} | 消息: {}", LogUtils.getCurrentUser(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.fail(HttpStatus.NOT_FOUND, ex.getMessage()));
+                .body(ApiResponse.fail(HttpStatus.NOT_FOUND, "请求的资源不存在"));
     }
 
     /**
@@ -146,7 +141,7 @@ public class GlobalExceptionHandler {
                 LogUtils.getCurrentUser(), ex.getClass().getSimpleName(), ex.getMessage(), ex);
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR, "系统运行时异常：" + ex.getMessage()));
+                .body(ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR, "系统内部错误"));
     }
 
     /**
@@ -158,6 +153,6 @@ public class GlobalExceptionHandler {
                 LogUtils.getCurrentUser(), ex.getClass().getSimpleName(), ex.getMessage(), ex);
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR, "服务器内部错误：" + ex.getMessage()));
+                .body(ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR, "服务器内部错误"));
     }
 }

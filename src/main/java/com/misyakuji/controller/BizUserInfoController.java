@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -297,14 +296,6 @@ public class BizUserInfoController {
     private BizUserInfo getDefaultUserInfo(Integer userId) {
         return BizUserInfo.builder()
                 .bizUser(BizUser.builder().userId(userId).build())
-                .phone("+86 13923734567")
-                .email("Account@qq.com")
-                .seatNumber("T32F 012")
-                .department("腾讯集团")
-                .directLeaderId(1)  // 假设领导ID为1
-                .position("高级 UI 设计师")
-                .hireDate(LocalDate.of(2021, 7, 1))
-                .team("腾讯/腾讯公司/某事业群/某产品部/某运营中心/商户服务组")
                 .build();
     }
 }
