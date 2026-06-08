@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,6 +42,8 @@ public class BizUserInfo {
     @JoinColumn(name = "user_id", nullable = false, unique = true, 
                 foreignKey = @ForeignKey(name = "fk_biz_user_info_user"))
     @JsonBackReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private BizUser bizUser;
 
     /**

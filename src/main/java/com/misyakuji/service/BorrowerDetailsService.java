@@ -23,8 +23,22 @@ public class BorrowerDetailsService {
     public BorrowerDetails update(Integer id, BorrowerDetails borrower) {
         return repository.findById(id)
                 .map(existing -> {
-                    borrower.setDetailId(id);
-                    return repository.save(borrower);
+                    if (borrower.getTransactionType() != null) {
+                        existing.setTransactionType(borrower.getTransactionType());
+                    }
+                    if (borrower.getAmount() != null) {
+                        existing.setAmount(borrower.getAmount());
+                    }
+                    if (borrower.getTransactionDate() != null) {
+                        existing.setTransactionDate(borrower.getTransactionDate());
+                    }
+                    if (borrower.getNotes() != null) {
+                        existing.setNotes(borrower.getNotes());
+                    }
+                    if (borrower.getBorrower() != null) {
+                        existing.setBorrower(borrower.getBorrower());
+                    }
+                    return repository.save(existing);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("BorrowerDetail not found"));
     }

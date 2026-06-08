@@ -96,13 +96,36 @@ public class BorrowersService {
      * @throws EntityNotFoundException 当指定ID的借款人不存在时抛出
      */
     public Borrowers update(Integer id, Borrowers borrower) {
-        // 查找指定ID的借款人，如果存在则更新，否则抛出异常
         return repository.findById(id)
                 .map(existing -> {
-                    // 设置ID以确保更新操作而非创建新记录
-                    borrower.setBorrowerId(id);
-                    // 保存更新后的借款人信息
-                    return repository.save(borrower);
+                    if (borrower.getName() != null) {
+                        existing.setName(borrower.getName());
+                    }
+                    if (borrower.getTel() != null) {
+                        existing.setTel(borrower.getTel());
+                    }
+                    if (borrower.getStartDate() != null) {
+                        existing.setStartDate(borrower.getStartDate());
+                    }
+                    if (borrower.getEndDate() != null) {
+                        existing.setEndDate(borrower.getEndDate());
+                    }
+                    if (borrower.getTotalLoan() != null) {
+                        existing.setTotalLoan(borrower.getTotalLoan());
+                    }
+                    if (borrower.getTotalInterest() != null) {
+                        existing.setTotalInterest(borrower.getTotalInterest());
+                    }
+                    if (borrower.getRemainingBalance() != null) {
+                        existing.setRemainingBalance(borrower.getRemainingBalance());
+                    }
+                    if (borrower.getTotalAmount() != null) {
+                        existing.setTotalAmount(borrower.getTotalAmount());
+                    }
+                    if (borrower.getBizUser() != null) {
+                        existing.setBizUser(borrower.getBizUser());
+                    }
+                    return repository.save(existing);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Borrower not found"));
     }

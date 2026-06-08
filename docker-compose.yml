@@ -25,6 +25,12 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MARIADB_PASSWORD: ${DB_PASSWORD}
       TZ: ${TZ}
+      # === MariaDB 服务器参数优化 ===
+      MYSQL_MAX_CONNECTIONS: 200
+      MYSQL_INNODB_BUFFER_POOL_SIZE: 512M
+      MYSQL_INNODB_FLUSH_LOG_AT_TRX_COMMIT: 2
+      MYSQL_SLOW_QUERY_LOG: ON
+      MYSQL_LONG_QUERY_TIME: 2
 
     # 端口映射（仅绑定到 localhost，提升安全性）
     ports:
@@ -64,19 +70,6 @@ services:
         max-size: "10m"
         max-file: "3"
 
-    # MariaDB 服务器参数优化
-#    command:
-#      - --character-set-server=utf8mb4                    # 字符集：支持 emoji 等特殊字符
-#      - --collation-server=utf8mb4_unicode_ci             # 排序规则：Unicode 标准
-#      - --default-time-zone=${DEFAULT_TIME_ZONE}          # 时区设置
-#      - --max-connections=200                             # 最大连接数
-#      - --innodb-buffer-pool-size=512M                    # InnoDB 缓冲池大小
-#      - --innodb-log-file-size=128M                       # InnoDB 日志文件大小
-#      - --innodb-flush-log-at-trx-commit=2                # 刷新策略：每秒刷新（性能优化）
-#      - --slow-query-log=1                                # 启用慢查询日志
-#      - --slow-query-log-file=/var/lib/mysql/slow.log     # 慢查询日志路径
-#      - --long-query-time=2                               # 慢查询阈值：2秒
-
   # ============================================================================
   # Spring Boot 应用服务
   # 框架: Spring Boot 3.5.9 + Jetty
@@ -100,15 +93,13 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.mariadb.jdbc.Driver
+      # Redis 连接配置（Docker 内部用服务名访问）
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
       # 系统配置
       - TZ=${TZ}
       # JVM 参数配置（从 .env 读取，便于调整）
       - JAVA_OPTS=-Xms${JAVA_XMS} -Xmx${JAVA_XMX} -XX:+UseG1GC -XX:MaxGCPauseMillis=${JAVA_MAX_GC_PAUSE}
-
-    # 依赖关系：等待 MariaDB 健康检查通过后再启动
-    depends_on:
-      mariadb:
-        condition: service_healthy
 
     # 网络配置
     networks:
@@ -143,11 +134,70 @@ services:
         max-size: "10m"
         max-file: "3"
 
+    # 依赖关系：等待 MariaDB 和 Redis 都健康后再启动
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ============================================================================
+  # Redis 8 缓存服务
+  # 用途: Token 黑名单持久化、数据缓存、限流
+  # ============================================================================
+  redis:
+    image: redis:8-alpine
+    container_name: jasper-redis
+    restart: unless-stopped
+
+    # 端口映射（仅绑定到 localhost，提升安全性）
+    ports:
+      - "127.0.0.1:6379:6379"
+
+    # 环境变量配置
+    environment:
+      - TZ=${TZ}
+
+    # 数据卷挂载（持久化 RDB/AOF 文件）
+    volumes:
+      - redis_data:/data
+
+    # 网络配置
+    networks:
+      - app-network
+
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    # 资源限制配置
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+    # 日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 # ==============================================================================
 # 数据卷定义
 # ==============================================================================
 volumes:
   mariadb_data:
+    driver: local
+  redis_data:
     driver: local
 
 # ==============================================================================

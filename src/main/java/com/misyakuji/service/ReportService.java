@@ -3,6 +3,7 @@ package com.misyakuji.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.misyakuji.entity.BorrowerDetails;
 import lombok.AllArgsConstructor;
 import net.sf.jasperreports.engine.*;
@@ -40,7 +41,7 @@ public class ReportService {
 
             // 解析 JSON 数据
             ObjectMapper mapper = new ObjectMapper();
-            // 配置忽略未知字段（避免 id 等未定义字段报错）
+            mapper.registerModule(new JavaTimeModule());
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             // 解析JSON数据
             List<BorrowerDetails> data = mapper.readValue(jsonData.getInputStream(), new TypeReference<>() {});

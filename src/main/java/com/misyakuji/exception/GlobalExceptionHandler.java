@@ -2,6 +2,7 @@ package com.misyakuji.exception;
 
 import com.misyakuji.common.ApiResponse;
 import com.misyakuji.utils.LogUtils;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
+import org.springframework.security.core.Authentication;
 
 @RestControllerAdvice
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -105,7 +107,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiResponse<?>> handleAuthenticationException(AuthenticationException ex) {
-        LogUtils.logSecurityEvent("认证失败", ex.getAuthenticationRequest().getName(), ex.getMessage());
+        String username = Optional.ofNullable(ex.getAuthenticationRequest())
+                .map(Authentication::getName)
+                .orElse("anonymous");
+        LogUtils.logSecurityEvent("认证失败", username, ex.getMessage());
         
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.fail(HttpStatus.UNAUTHORIZED, "认证失败：" + ex.getMessage()));
@@ -120,6 +125,16 @@ public class GlobalExceptionHandler {
         
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.fail(HttpStatus.FORBIDDEN, "权限不足：" + ex.getMessage()));
+    }
+
+    /**
+     * 处理 EntityNotFoundException (JPA)
+     */
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ApiResponse<?>> handleEntityNotFound(EntityNotFoundException ex) {
+        log.warn("实体不存在 - 用户: {} | 消息: {}", LogUtils.getCurrentUser(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.fail(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 
     /**

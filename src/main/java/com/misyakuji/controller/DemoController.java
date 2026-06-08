@@ -11,10 +11,10 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/demo")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class DemoController {
-    private List<String> testList = Arrays.asList("aaa", "bbb", "ccc");
+    private final List<String> testList = Arrays.asList("aaa", "bbb", "ccc");
 
     @GetMapping("/public")
     public String publicAccess() {
@@ -44,7 +44,7 @@ public class DemoController {
     @GetMapping("/test")
     public String test() {
         Collections.shuffle(testList);
-        System.out.println(testList.get(0));
-        return testList.get(0);
+        System.out.println(testList.getFirst());
+        return testList.getFirst();
     }
 }

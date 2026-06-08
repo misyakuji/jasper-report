@@ -48,13 +48,20 @@ public enum TransactionType {
      * @return 对应的TransactionType枚举实例，如果没有匹配的则返回null
      */
     public static TransactionType getByValue(String value) {
-        // 遍历所有枚举值，查找匹配的value
         for (TransactionType type : values()) {
             if (value.equals(type.getValue())) {
                 return type;
             }
         }
-        // 没有找到匹配的枚举值，返回null
+        return null;
+    }
+
+    public static TransactionType getByText(String text) {
+        for (TransactionType type : values()) {
+            if (text.equals(type.getText())) {
+                return type;
+            }
+        }
         return null;
     }
 }

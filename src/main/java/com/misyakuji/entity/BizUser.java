@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -82,7 +84,7 @@ public class BizUser {
      * 最后更新时间
      * 数据库自动更新
      */
-    @Column(name = "updated_time", insertable = false)
+    @Column(name = "updated_time", insertable = false, updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedTime;
 
@@ -92,6 +94,8 @@ public class BizUser {
      */
     @OneToOne(mappedBy = "bizUser", cascade = CascadeType.ALL)
     @JsonManagedReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private BizUserInfo bizUserInfo;
 
     /**
@@ -101,5 +105,7 @@ public class BizUser {
      */
     @OneToMany(mappedBy = "bizUser", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JsonManagedReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Borrowers> borrowers;
 }

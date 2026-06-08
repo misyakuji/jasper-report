@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,8 +43,11 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
-        org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) auth.getPrincipal();
-        String token = jwtUtils.generateToken(user.getUsername(), user.getAuthorities().iterator().next().getAuthority());
+        String role = auth.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("ROLE_USER");
+        String token = jwtUtils.generateToken(auth.getName(), role);
 
         return Map.of("token", token);
     }
@@ -52,7 +56,12 @@ public class AuthController {
     public Map<String, String> register(@RequestBody Map<String, String> registerRequest) {
         String username = registerRequest.get("username");
         String password = registerRequest.get("password");
-        
+
+        // 检查必填字段
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            return Map.of("message", "请求参数不存在");
+        }
+
         // 检查用户名是否已存在
         if (bizUserRepository.findByUsername(username).isPresent()) {
             return Map.of("message", "用户名已存在");

@@ -7,7 +7,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,10 +40,11 @@ public class BorrowerDetails {
      * 懒加载模式，外键列为borrower_id
      * 使用@JsonBackReference避免JSON序列化时的循环引用
      */
-    @ManyToOne(fetch = FetchType.LAZY)  // 多对一关系配置，懒加载模式
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "borrower_id", nullable = false)
-//    @JsonIgnore // 完全忽略序列化, @JsonIgnore可替代主从表的@JsonManagedReference 和 @JsonBackReference
-    @JsonBackReference  // 解决JSON序列化的循环引用问题
+    @JsonBackReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Borrowers borrower;
 
 //    @Column(name = "borrower_id", nullable = false)
@@ -92,7 +95,7 @@ public class BorrowerDetails {
      * MariaDB自动更新，不可插入
      * JSON序列化时使用指定的日期时间格式
      */
-    @Column(name = "updated_time", insertable = false)
+    @Column(name = "updated_time", insertable = false, updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private LocalDateTime updatedTime;
 

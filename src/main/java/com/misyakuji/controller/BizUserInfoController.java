@@ -298,7 +298,6 @@ public class BizUserInfoController {
         return BizUserInfo.builder()
                 .bizUser(BizUser.builder().userId(userId).build())
                 .phone("+86 13923734567")
-                .phone("734567")
                 .email("Account@qq.com")
                 .seatNumber("T32F 012")
                 .department("腾讯集团")
