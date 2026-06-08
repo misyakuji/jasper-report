@@ -1,14 +1,7 @@
-# ==============================================================================
-# Docker Compose V2 服务编排配置
-# 项目: Jasper Report API
-# 技术栈: Spring Boot 4.0.6 + MariaDB 11.8 LTS
-# ==============================================================================
+# Docker Compose V2 — Spring Boot 4.0.6 + MariaDB 11.8 + Redis 8
 
 services:
-  # ============================================================================
-  # MariaDB 数据库服务
-  # 版本: 11.8 LTS (长期支持版本至 2028年5月)
-  # ============================================================================
+  # MariaDB 11.8
   mariadb:
     image: wodby/mariadb:11.8
     container_name: mariadb-jasper
@@ -70,11 +63,7 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # ============================================================================
-  # Spring Boot 应用服务
-  # 框架: Spring Boot 4.0.6 + Jetty
-  # JDK: Eclipse Temurin 25
-  # ============================================================================
+  # Spring Boot 4.0.6 + Jetty + Temurin 25
   springboot-app:
     build:
       context: .
@@ -142,10 +131,8 @@ services:
       redis:
         condition: service_healthy
 
-  # ============================================================================
-  # Redis 8 缓存服务
-  # 用途: Token 黑名单持久化、数据缓存、限流
-  # ============================================================================
+  # Redis 8 — token blacklist, cache, rate-limit
+
   redis:
     image: redis:8-alpine
     container_name: jasper-redis

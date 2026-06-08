@@ -3,10 +3,12 @@
 This is study project with jasper in Springboot.
 
 ## 环境准备
-- 配置jdk21环境变量
-- 配置mariadb数据库
-- 配置docker环境
-- 配置maven
+- JDK 25 (Temurin)
+- MariaDB 11.8
+- Redis 8
+- Docker
+- Maven
+- 技术栈: Spring Boot 4.0.6 + Jetty + JasperReports 7.0.7 + Lombok + JWT (jjwt 0.13.0)
 
 ## 🚀 启动·指南
 
