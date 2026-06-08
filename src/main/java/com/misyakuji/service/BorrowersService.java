@@ -1,11 +1,11 @@
 package com.misyakuji.service;
 
 import com.misyakuji.entity.BizUser;
-import com.misyakuji.entity.Borrowers;
 import com.misyakuji.entity.BorrowerDetails;
+import com.misyakuji.entity.Borrowers;
 import com.misyakuji.enums.TransactionType;
-import com.misyakuji.repository.BorrowersRepository;
 import com.misyakuji.repository.BizUserRepository;
+import com.misyakuji.repository.BorrowersRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;

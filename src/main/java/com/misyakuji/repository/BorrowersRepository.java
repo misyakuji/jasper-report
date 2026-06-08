@@ -1,8 +1,9 @@
 package com.misyakuji.repository;
 
-import com.misyakuji.entity.Borrowers;
 import com.misyakuji.entity.BizUser;
+import com.misyakuji.entity.Borrowers;
 import lombok.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -105,7 +106,8 @@ public interface BorrowersRepository extends JpaRepository<Borrowers, Integer>,
      * @param pageable 分页信息
      * @return 分页的借款人列表
      */
-    Page<Borrowers> findAll(@NonNull Pageable pageable);
+    @NullMarked
+    Page<Borrowers> findAll(Pageable pageable);
 
     /**
      * 根据用户ID分页查询借款人

@@ -1,7 +1,7 @@
 package com.misyakuji.repository;
 
-import com.misyakuji.entity.BizUserInfo;
 import com.misyakuji.entity.BizUser;
+import com.misyakuji.entity.BizUserInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
