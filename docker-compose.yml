@@ -16,7 +16,6 @@ services:
 
     # 环境变量配置
     environment:
-      # === 同时提供 MYSQL_ 和 MARIADB_ 变量（双保险）===
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}

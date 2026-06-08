@@ -55,7 +55,7 @@ docker compose up -d --force-recreate
 # 停止所有运行的服务，并删除默认网络和容器
 docker compose down
 # 停止所有运行的服务，并删除默认网络和容器以及数据卷
-docker-compose down -v
+docker compose down -v
 # 停止并完全移除 Docker Compose 项目创建的所有资源(容器、网络、数据卷、镜像)
 docker compose down -v --rmi all --remove-orphans
 
